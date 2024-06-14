@@ -81,7 +81,7 @@ export default function Week(props: Props) {
 
   return (
     <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger className={`group relative m-[1px] aspect-square w-6 min-w-[2px]`}>
+      <HoverCardTrigger className={`group relative aspect-square w-6 min-w-[2px] sm:m-[1px]`}>
         <div
           className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none bg-accent-foreground transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
           style={{ backgroundColor: color }}
