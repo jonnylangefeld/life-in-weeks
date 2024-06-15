@@ -1,5 +1,6 @@
+import { useState } from "react"
 import { Data, Event } from "./chart"
-import { HoverCard, HoverCardArrow, HoverCardContent, HoverCardTrigger } from "./ui/hover-card"
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
 
 interface Props {
   week: number
@@ -79,17 +80,23 @@ export default function Week(props: Props) {
     return undefined
   }
 
+  const [open, setOpen] = useState(false)
+
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger className={`group relative aspect-square w-6 min-w-[2px] sm:m-[1px]`}>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        className="group relative aspect-square w-6 min-w-[2px] sm:m-[1px]"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+      >
         <div
           className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none bg-accent-foreground transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
           style={{ backgroundColor: color }}
         >
           {tileContent()}
         </div>
-      </HoverCardTrigger>
-      <HoverCardContent side="top" className="pointer-events-none text-sm shadow-lg">
+      </PopoverTrigger>
+      <PopoverContent side="top" className="pointer-events-none text-sm shadow-lg">
         <p className={events.length != 0 ? "text-muted-foreground" : ""}>
           <div>
             Age {props.year} year{props.year != 1 ? "s" : ""} and {props.week} week{props.week > 1 ? "s" : ""}
@@ -113,8 +120,8 @@ export default function Week(props: Props) {
           )
         })}
 
-        <HoverCardArrow />
-      </HoverCardContent>
-    </HoverCard>
+        <PopoverArrow />
+      </PopoverContent>
+    </Popover>
   )
 }
