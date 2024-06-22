@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="m-2 flex min-h-screen min-w-[280px] items-start justify-center sm:m-4 md:m-6">
-            <div className="flex w-full max-w-screen-xl flex-col overflow-hidden rounded-lg bg-muted p-2 shadow-lg sm:p-4 md:p-6">
+            <div className="flex w-full max-w-screen-2xl flex-col overflow-hidden rounded-lg bg-muted p-2 shadow-lg sm:p-4 md:p-6">
               {children}
             </div>
           </div>
