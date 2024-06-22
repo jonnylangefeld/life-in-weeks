@@ -209,7 +209,7 @@ export default function Chart() {
     <div className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
       <div />
       <div className="m-1 flex flex-row gap-3">
-        <div className="min-w-3 lg:min-w-6"></div>
+        <div className="min-w-3 lg:min-w-5"></div>
         <div>Weeks →</div>
       </div>
       <div className="flex flex-row">
