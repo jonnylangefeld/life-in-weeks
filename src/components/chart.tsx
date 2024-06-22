@@ -7,7 +7,29 @@ export interface Event {
   emoji?: string
   date: Date
   toDate?: Date
-  color?: string
+  color?:
+    | "slate"
+    | "gray"
+    | "zinc"
+    | "neutral"
+    | "stone"
+    | "red"
+    | "orange"
+    | "amber"
+    | "yellow"
+    | "lime"
+    | "green"
+    | "emerald"
+    | "teal"
+    | "cyan"
+    | "sky"
+    | "blue"
+    | "indigo"
+    | "violet"
+    | "purple"
+    | "fuchsia"
+    | "pink"
+    | "rose"
 }
 
 export interface Data {
@@ -30,7 +52,7 @@ const data: Data = {
       title: "Elementary school",
       date: new Date("1998-09-15"),
       toDate: new Date("2002-7-31"),
-      color: "#c7d2fe",
+      color: "indigo",
       emoji: "🍎",
     },
     {
@@ -42,7 +64,7 @@ const data: Data = {
       title: "Gymnasium",
       date: new Date("2002-09-17"),
       toDate: new Date("2011-03-06"),
-      color: "#ddd6fe",
+      color: "violet",
       emoji: "🏫",
     },
     {
@@ -69,7 +91,7 @@ const data: Data = {
       title: "College",
       date: new Date("2011-10-10"),
       toDate: new Date("2014-09-30"),
-      color: "#e9d5ff",
+      color: "purple",
       emoji: "👨🏼‍🎓",
     },
     {
@@ -96,14 +118,14 @@ const data: Data = {
       title: "IBM",
       date: new Date("2014-10-01"),
       toDate: new Date("2017-04-01"),
-      color: "#f5d0fe",
+      color: "fuchsia",
       emoji: "👨🏼‍💻",
     },
     {
       title: "Daimler",
       date: new Date("2017-04-03"),
       toDate: new Date("2017-07-31"),
-      color: "#fbcfe8",
+      color: "pink",
       emoji: "⭐️",
     },
     {
@@ -115,7 +137,7 @@ const data: Data = {
       title: "MBRDNA",
       date: new Date("2017-09-05"),
       toDate: new Date("2020-03-06"),
-      color: "#fecdd3",
+      color: "red",
       emoji: "💼",
     },
     {
@@ -149,6 +171,13 @@ const data: Data = {
       emoji: "❤️‍🔥",
     },
     {
+      title: "First Germany trip with Mckenzie",
+      date: new Date("2018-10-04"),
+      toDate: new Date("2018-10-28"),
+      color: "teal",
+      emoji: "🇩🇪",
+    },
+    {
       title: "Got engaged",
       date: new Date("2019-04-24"),
       emoji: "💍",
@@ -164,11 +193,60 @@ const data: Data = {
       emoji: "💒",
     },
     {
+      title: "Germany trip",
+      date: new Date("2019-12-18"),
+      toDate: new Date("2020-01-02"),
+      color: "teal",
+      emoji: "🇩🇪",
+    },
+    {
+      title: "Maledives for honeymoon 🍯",
+      date: new Date("2020-01-02"),
+      toDate: new Date("2020-01-11"),
+      color: "emerald",
+      emoji: "🇲🇻",
+    },
+    {
+      title: "Singapore for honeymoon 🍯",
+      date: new Date("2020-01-11"),
+      toDate: new Date("2020-01-15"),
+      color: "green",
+      emoji: "🇸🇬",
+    },
+    {
+      title: "Bali for honeymoon 🍯",
+      date: new Date("2020-01-15"),
+      toDate: new Date("2020-01-30"),
+      color: "lime",
+      emoji: "🇮🇩",
+    },
+    {
       title: "Cruise",
       date: new Date("2020-03-09"),
       toDate: new Date("2024-02-23"),
-      color: "#fed7aa",
+      color: "orange",
       emoji: "🛳️",
+    },
+    {
+      title: "Germany trip",
+      date: new Date("2020-12-02"),
+      toDate: new Date("2020-12-15"),
+      color: "teal",
+      emoji: "🇩🇪",
+    },
+    {
+      title: "Mexico for the Konkel wedding",
+      date: new Date("2021-08-07"),
+      toDate: new Date("2021-08-14"),
+      color: "cyan",
+      emoji: "🇲🇽",
+    },
+    {
+      title: "Germany trip",
+      date: new Date("2021-09-05"),
+      toDate: new Date("2021-09-16"),
+      color: "teal",
+      emoji: "🇩🇪",
     },
     {
       title: "Moved into 2228 Mulholland Dr, Lathrop, CA",
@@ -186,9 +264,37 @@ const data: Data = {
       emoji: "🐶",
     },
     {
+      title: "Canada for Kubecon in Detroit",
+      date: new Date("2022-10-25"),
+      toDate: new Date("2022-10-28"),
+      color: "teal",
+      emoji: "🇨🇦",
+    },
+    {
+      title: "Mexico for the Yawili wedding",
+      date: new Date("2023-02-14"),
+      toDate: new Date("2023-02-14"),
+      color: "cyan",
+      emoji: "🇲🇽",
+    },
+    {
       title: "Found out we are pregnant with Leonie",
       date: new Date("2023-11-09"),
       emoji: "👶🏼",
+    },
+    {
+      title: "Dominican Republic for the Marrow wedding",
+      date: new Date("2023-11-30"),
+      toDate: new Date("2023-12-04"),
+      color: "sky",
+      emoji: "🇩🇴",
+    },
+    {
+      title: "Germany trip",
+      date: new Date("2023-12-15"),
+      toDate: new Date("2024-01-08"),
+      color: "blue",
+      emoji: "🇩🇪",
     },
     {
       title: "First day at Snowflake",
