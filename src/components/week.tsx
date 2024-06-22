@@ -14,8 +14,8 @@ function dateInRange(date: Date, from: Date, to: Date): boolean {
 
 function dateRangeOverlap(from1: Date, to1: Date, from2: Date, to2: Date): boolean {
   return (
-    (from1.getTime() <= from2.getTime() && from2.getTime() < to1.getTime()) ||
-    (from1.getTime() <= to2.getTime() && to2.getTime() < to1.getTime())
+    (from1.getTime() < from2.getTime() && from2.getTime() < to1.getTime()) ||
+    (from1.getTime() < to2.getTime() && to2.getTime() < to1.getTime())
   )
 }
 
@@ -51,7 +51,7 @@ export default function Week(props: Props) {
   }
 
   const events = getEvents()
-  const color = events.at(0)?.color
+  const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
 
   const tileContent = (): JSX.Element | undefined => {
     let emoji: string | undefined
@@ -62,7 +62,7 @@ export default function Week(props: Props) {
     }
     if (emoji) {
       return (
-        <svg viewBox="0 0 1000 1000" className="h-full w-full">
+        <svg viewBox="0 0 1000 1000" className="z-50 h-full w-full">
           <text
             style={{
               fontSize: 800,
@@ -90,10 +90,18 @@ export default function Week(props: Props) {
         onMouseLeave={() => setOpen(false)}
       >
         <div
-          className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none bg-accent-foreground transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
-          style={{ backgroundColor: color }}
+          className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
         >
-          {tileContent()}
+          {lived() && (
+            <>
+              <div className="absolute bottom-0 grid h-full w-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
+                {colors.map((color) => (
+                  <div className={`bg-${color}-300 dark:bg-${color}-200`}></div>
+                ))}
+              </div>
+              {tileContent()}
+            </>
+          )}
         </div>
       </PopoverTrigger>
       <PopoverContent
