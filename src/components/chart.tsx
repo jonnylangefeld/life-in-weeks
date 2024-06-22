@@ -206,10 +206,20 @@ const data: Data = {
 export default function Chart() {
   const age = new Date().getFullYear() - data.birthDate.getFullYear() - 1
   return (
-    <div className="flex flex-col">
-      {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
-        <Year key={index} year={index} data={data} />
-      ))}
+    <div className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
+      <div />
+      <div className="m-1 flex flex-row gap-3">
+        <div className="lg:min-w-6"></div>
+        <div>Weeks →</div>
+      </div>
+      <div className="flex flex-row">
+        <div className="m-1 leading-none [writing-mode:vertical-lr]">Age →</div>
+      </div>
+      <div className="flex flex-col">
+        {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
+          <Year key={index} year={index} data={data} />
+        ))}
+      </div>
     </div>
   )
 }
