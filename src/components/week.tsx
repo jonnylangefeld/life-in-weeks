@@ -96,7 +96,13 @@ export default function Week(props: Props) {
           {tileContent()}
         </div>
       </PopoverTrigger>
-      <PopoverContent side="top" className="pointer-events-none text-sm shadow-lg">
+      <PopoverContent
+        side="top"
+        className="pointer-events-none text-sm shadow-lg"
+        onWheel={(e) => {
+          e.stopPropagation()
+        }}
+      >
         <p className={events.length != 0 ? "text-muted-foreground" : ""}>
           <div>
             Age {props.year} year{props.year != 1 ? "s" : ""} and {props.week} week{props.week > 1 ? "s" : ""}
