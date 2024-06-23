@@ -141,7 +141,7 @@ const data: Data = {
       title: "French Riviera bike trip 🚴🏼‍♂️",
       date: new Date("2015-05-15"),
       toDate: new Date("2015-05-24"),
-      color: "amber",
+      color: "yellow",
       emoji: "🇫🇷",
     },
     {
@@ -167,7 +167,7 @@ const data: Data = {
       title: "Sweden trip",
       date: new Date("2016-03-18"),
       toDate: new Date("2016-03-23"),
-      color: "yellow",
+      color: "amber",
       emoji: "🇸🇪",
     },
     {
@@ -181,7 +181,7 @@ const data: Data = {
       title: "Sweden trip",
       date: new Date("2016-04-17"),
       toDate: new Date("2016-04-21"),
-      color: "yellow",
+      color: "amber",
       emoji: "🇸🇪",
     },
     {
@@ -202,7 +202,7 @@ const data: Data = {
       title: "Israel trip",
       date: new Date("2016-11-05"),
       toDate: new Date("2016-11-19"),
-      color: "amber",
+      color: "yellow",
       emoji: "🇮🇱",
     },
     {

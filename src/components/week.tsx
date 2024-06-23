@@ -62,7 +62,7 @@ export default function Week(props: Props) {
     }
     if (emoji) {
       return (
-        <svg viewBox="0 0 1000 1000" className="z-50 h-full w-full">
+        <svg viewBox="0 0 1000 1000" className="z-40 h-full w-full">
           <text
             style={{
               fontSize: 800,
