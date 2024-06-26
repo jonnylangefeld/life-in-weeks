@@ -1,5 +1,6 @@
 "use client"
 
+import Tick from "./tick"
 import Year from "./year"
 
 export interface Event {
@@ -503,12 +504,22 @@ export default function Chart() {
   return (
     <div className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
       <div />
-      <div className="m-1 flex flex-row gap-3">
-        <div className="min-w-3 lg:min-w-5"></div>
-        <div>Weeks →</div>
+      <div className="flex flex-col">
+        <div className="flex flex-row gap-3">
+          <div className="min-w-3 lg:min-w-5"></div>
+          <div className="leading-none">Weeks →</div>
+        </div>
+        <div className="mb-1 flex flex-row gap-2">
+          <div className="min-w-3 lg:min-w-5"></div>
+          <div className="grid flex-grow grid-cols-52">
+            {Array.from({ length: 52 }).map((_, index) => (
+              <Tick key={index} t={index + 1} />
+            ))}
+          </div>
+        </div>
       </div>
       <div className="flex flex-row">
-        <div className="m-1 leading-none [writing-mode:vertical-lr]">Age →</div>
+        <div className="leading-none [writing-mode:vertical-lr]">Age →</div>
       </div>
       <div className="flex flex-col">
         {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
