@@ -85,7 +85,7 @@ export default function Week(props: Props) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        className="group relative aspect-square w-6 min-w-[2px] sm:m-[1px]"
+        className="group relative aspect-square w-16 min-w-[2px] sm:m-[1px]"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
       >
@@ -134,7 +134,7 @@ export default function Week(props: Props) {
           )
         })}
 
-        <PopoverArrow />
+        <PopoverArrow className="invert dark:invert-0" />
       </PopoverContent>
     </Popover>
   )
