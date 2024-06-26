@@ -95,8 +95,8 @@ export default function Week(props: Props) {
           {lived() && (
             <>
               <div className="absolute bottom-0 grid h-full w-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
-                {colors.map((color) => (
-                  <div className={`bg-${color}-300 dark:bg-${color}-200`}></div>
+                {colors.map((color, index) => (
+                  <div key={index} className={`bg-${color}-300 dark:bg-${color}-200`}></div>
                 ))}
               </div>
               {tileContent()}
@@ -111,7 +111,7 @@ export default function Week(props: Props) {
           e.stopPropagation()
         }}
       >
-        <p className={events.length != 0 ? "text-muted-foreground" : ""}>
+        <div className={events.length != 0 ? "text-muted-foreground" : ""}>
           <div>
             Age {props.year} year{props.year != 1 ? "s" : ""} and {props.week} week{props.week > 1 ? "s" : ""}
           </div>
@@ -119,7 +119,7 @@ export default function Week(props: Props) {
             {beginningOfWeek.toLocaleDateString(undefined, { timeZone: "UTC" })} -{" "}
             {endOfWeek.toLocaleDateString(undefined, { timeZone: "UTC" })}
           </div>
-        </p>
+        </div>
         {events.map((event, index) => {
           return (
             <div key={index}>
