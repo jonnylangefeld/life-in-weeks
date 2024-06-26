@@ -505,21 +505,19 @@ export default function Chart() {
     <div className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
       <div />
       <div className="flex flex-col">
-        <div className="flex flex-row gap-3">
-          <div className="min-w-3 lg:min-w-5"></div>
-          <div className="leading-none">Weeks →</div>
-        </div>
-        <div className="mb-1 flex flex-row gap-2">
-          <div className="min-w-3 lg:min-w-5"></div>
-          <div className="grid flex-grow grid-cols-52">
-            {Array.from({ length: 52 }).map((_, index) => (
-              <Tick key={index} t={index + 1} />
-            ))}
+        <div className="grid w-full grid-cols-[repeat(53,_minmax(0,_1fr))]">
+          <div className="col-span-full col-start-2">
+            <div className="ml-1 leading-none">Weeks →</div>
           </div>
+        </div>
+        <div className="flex flex-grow flex-row contain-inline-size">
+          {Array.from({ length: 53 }).map((_, index) => (
+            <Tick key={index} t={index} minIndex={1} />
+          ))}
         </div>
       </div>
       <div className="flex flex-row">
-        <div className="leading-none [writing-mode:vertical-lr]">Age →</div>
+        <div className="mt-1 leading-none [writing-mode:vertical-lr]">Age →</div>
       </div>
       <div className="flex flex-col">
         {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
