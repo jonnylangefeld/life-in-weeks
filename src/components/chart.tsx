@@ -1,5 +1,3 @@
-"use client"
-
 import Tick from "./tick"
 import Year from "./year"
 

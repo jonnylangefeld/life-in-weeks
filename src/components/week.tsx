@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import { Data, Event } from "./chart"
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
