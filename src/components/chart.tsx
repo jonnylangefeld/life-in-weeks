@@ -52,7 +52,7 @@ const data: Data = {
     {
       title: "Elementary school",
       date: new Date("1998-09-15"),
-      toDate: new Date("2002-7-31"),
+      toDate: new Date("2002-07-31"),
       color: "indigo",
       emoji: "🍎",
     },
