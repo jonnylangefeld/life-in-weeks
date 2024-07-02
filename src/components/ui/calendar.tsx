@@ -4,7 +4,6 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker, DropdownProps } from "react-day-picker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -67,14 +66,16 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
               <SelectTrigger className="pr-1.5">
                 <SelectValue>{selected?.props?.children}</SelectValue>
               </SelectTrigger>
-              <SelectContent>
-                <ScrollArea className="h-80">
-                  {options.map((option, id: number) => (
-                    <SelectItem key={`${option.props.value}-${id}`} value={option.props.value?.toString() ?? ""}>
-                      {option.props.children}
-                    </SelectItem>
-                  ))}
-                </ScrollArea>
+              <SelectContent className="h-80 overflow-scroll">
+                {options.map((option, id: number) => (
+                  <SelectItem
+                    key={`${option.props.value}-${id}`}
+                    value={option.props.value?.toString() ?? ""}
+                    className="cursor-pointer hover:bg-accent"
+                  >
+                    {option.props.children}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )

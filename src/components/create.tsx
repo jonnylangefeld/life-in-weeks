@@ -22,7 +22,7 @@ export default function Create() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [date, setDate] = useState<Date | undefined>(new Date())
-  console.log(date)
+  const now = new Date()
 
   const getUser = useCallback(async () => {
     setLoading(true)
@@ -69,8 +69,8 @@ export default function Create() {
           <Calendar
             mode="single"
             captionLayout="dropdown"
-            fromYear={2010}
-            toYear={2024}
+            fromYear={now.getFullYear() - 100}
+            toYear={now.getFullYear()}
             onSelect={setDate}
             selected={date}
           />
