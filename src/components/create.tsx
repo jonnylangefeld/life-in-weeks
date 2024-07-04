@@ -22,6 +22,7 @@ export default function Create() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const [open, setOpen] = useState(false)
   const now = new Date()
 
   const getUser = useCallback(async () => {
@@ -44,6 +45,13 @@ export default function Create() {
       error,
     } = await supabase.auth.signInAnonymously()
     setUser(user)
+
+    supabase.from("users").upsert([
+      {
+        id: user?.id,
+        date_of_birth: date,
+      },
+    ])
   }
 
   const createEvent = () => {
@@ -51,9 +59,9 @@ export default function Create() {
   }
 
   return (
-    <Dialog open={true}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={loading} onClick={loading ? undefined : user ? createEvent : undefined}>
+        <Button disabled={loading} onClick={loading ? undefined : user ? createEvent : () => setOpen(true)}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {loading ? "Loading..." : user ? "Create event" : "✨ Create your own!"}
         </Button>
@@ -76,7 +84,14 @@ export default function Create() {
           />
         </div>
         <DialogFooter>
-          <Button>Create!</Button>
+          <Button
+            onClick={() => {
+              createUser()
+              setOpen(false)
+            }}
+          >
+            Create!
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
