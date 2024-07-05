@@ -1,8 +1,7 @@
-"use client"
-
 import { useState } from "react"
-import { Data, Event } from "./chart"
+import { Data } from "./chart"
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { Event } from "@/app/page"
 
 interface Props {
   week: number

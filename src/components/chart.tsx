@@ -1,42 +1,16 @@
+import { Database } from "@/lib/database.types"
 import Tick from "./tick"
 import Year from "./year"
-
-export interface Event {
-  title?: string
-  emoji?: string
-  date: Date
-  toDate?: Date
-  color?:
-    | "slate"
-    | "gray"
-    | "zinc"
-    | "neutral"
-    | "stone"
-    | "red"
-    | "orange"
-    | "amber"
-    | "yellow"
-    | "lime"
-    | "green"
-    | "emerald"
-    | "teal"
-    | "cyan"
-    | "sky"
-    | "blue"
-    | "indigo"
-    | "violet"
-    | "purple"
-    | "fuchsia"
-    | "pink"
-    | "rose"
-}
+import { createClient } from "@/utils/supabase/client"
+import { use, useEffect, useState } from "react"
+import { Event } from "@/app/page"
 
 export interface Data {
   birthDate: Date
   events: Event[]
 }
 
-const data: Data = {
+const default_: Data = {
   birthDate: new Date("1991-07-22"),
   // birthDate: new Date("1988-12-06"),
   // birthDate: new Date("1955-12-09"),
@@ -497,10 +471,34 @@ const data: Data = {
   ],
 }
 
-export default function Chart() {
-  const age = new Date().getFullYear() - data.birthDate.getFullYear() - 1
+interface Props {
+  loading: boolean
+  user?: Database["public"]["Tables"]["users"]["Row"]
+  events: Event[]
+}
+
+export default function Chart({ loading, user, events }: Props) {
+  let data: Data
+
+  if (loading) {
+    data = {
+      birthDate: new Date(),
+      events: [],
+    }
+  } else if (!user) {
+    data = default_
+  } else {
+    data = {
+      birthDate: user.date_of_birth,
+      events,
+    }
+  }
+  const age = new Date().getFullYear() - data.birthDate.getFullYear()
   return (
-    <div className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
+    <div
+      className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"
+      data-loading={loading}
+    >
       <div />
       <div className="flex flex-col">
         <div className="grid w-full grid-cols-[repeat(53,_minmax(0,_1fr))]">
