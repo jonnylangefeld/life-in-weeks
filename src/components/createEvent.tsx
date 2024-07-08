@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "./ui/calendar"
 import { format } from "date-fns"
-import { CalendarDots } from "@phosphor-icons/react"
+import { CalendarDots, Check } from "@phosphor-icons/react"
 
 const eventSchema = z.object({
   title: z
@@ -19,6 +19,30 @@ const eventSchema = z.object({
     })
     .min(2)
     .max(50),
+  color: z.enum([
+    "slate",
+    "gray",
+    "zinc",
+    "neutral",
+    "stone",
+    "red",
+    "orange",
+    "amber",
+    "yellow",
+    "lime",
+    "green",
+    "emerald",
+    "teal",
+    "cyan",
+    "sky",
+    "blue",
+    "indigo",
+    "violet",
+    "purple",
+    "fuchsia",
+    "pink",
+    "rose",
+  ]),
   date: z.date({
     required_error: "Please pick a date",
   }),
@@ -63,6 +87,57 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                   <Input {...field} />
                 </FormControl>
                 <FormDescription>The title of the life event</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Color</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                      >
+                        Pick a color
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="" align="center">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
+                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
+                          <Check size={32} className="h-5/6" />
+                        </span>
+                        color
+                      </div>
+                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
+                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
+                          <Check size={32} className="h-5/6" />
+                        </span>
+                        color
+                      </div>
+                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
+                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
+                          <Check size={32} className="h-5/6" />
+                        </span>
+                        color
+                      </div>
+                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
+                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
+                          <Check size={32} className="h-5/6" />
+                        </span>
+                        color
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <FormDescription>The background color of the life event</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
