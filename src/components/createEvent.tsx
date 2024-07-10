@@ -10,7 +10,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "./ui/calendar"
 import { format } from "date-fns"
-import { CalendarDots, Check } from "@phosphor-icons/react"
+import { CalendarDots, Check, Prohibit } from "@phosphor-icons/react"
+import { Color } from "@/lib/types"
+import ColorItem from "./colorItem"
 
 const eventSchema = z.object({
   title: z
@@ -19,30 +21,7 @@ const eventSchema = z.object({
     })
     .min(2)
     .max(50),
-  color: z.enum([
-    "slate",
-    "gray",
-    "zinc",
-    "neutral",
-    "stone",
-    "red",
-    "orange",
-    "amber",
-    "yellow",
-    "lime",
-    "green",
-    "emerald",
-    "teal",
-    "cyan",
-    "sky",
-    "blue",
-    "indigo",
-    "violet",
-    "purple",
-    "fuchsia",
-    "pink",
-    "rose",
-  ]),
+  color: z.enum([Object.values(Color)[0], ...Object.values(Color).map((color) => color.toLowerCase())]),
   date: z.date({
     required_error: "Please pick a date",
   }),
@@ -58,10 +37,12 @@ interface Props {
 
 export default function CreateEvent({ createEvent, setOpen }: Props) {
   const now = new Date()
+  const [color, setColor] = useState<Color | null>(null)
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
     defaultValues: {},
   })
+
   function onSubmit(values: z.infer<typeof eventSchema>) {
     console.log(values)
     createEvent()
@@ -97,43 +78,45 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Color</FormLabel>
-                <Popover>
+                <Popover modal>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
                         variant={"outline"}
-                        className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                          field.value && `bg-${field.value}-200 dark:bg-${field.value}-300 dark:text-background`
+                        )}
                       >
                         Pick a color
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="" align="center">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
-                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
-                          <Check size={32} className="h-5/6" />
+                  <PopoverContent align="center" className={cn("w-auto max-w-max")}>
+                    <div className="grid grid-cols-3 gap-1">
+                      {Object.values(Color).map((c) => (
+                        <ColorItem
+                          key={c}
+                          color={c}
+                          active={c === color}
+                          onClick={() => {
+                            field.onChange(c.toLowerCase())
+                            setColor(c)
+                          }}
+                        />
+                      ))}
+                      <button
+                        className="col-span-2 flex min-h-min flex-row flex-nowrap items-center justify-center gap-3 rounded-md p-2 text-sm hover:bg-muted"
+                        onClick={() => {
+                          field.onChange(undefined)
+                        }}
+                      >
+                        <span className={`flex h-5 w-5 items-center justify-center rounded-full`}>
+                          <Prohibit size={32} />
                         </span>
-                        color
-                      </div>
-                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
-                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
-                          <Check size={32} className="h-5/6" />
-                        </span>
-                        color
-                      </div>
-                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
-                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
-                          <Check size={32} className="h-5/6" />
-                        </span>
-                        color
-                      </div>
-                      <div className="flex flex-row flex-nowrap items-center justify-start gap-1">
-                        <span className="mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
-                          <Check size={32} className="h-5/6" />
-                        </span>
-                        color
-                      </div>
+                        No color
+                      </button>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -184,7 +167,7 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
               name="to_date"
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col">
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel>End Date</FormLabel>
                   <Popover modal>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -211,7 +194,7 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>The day this life event happened.</FormDescription>
+                  <FormDescription>Only necessary for multi day events.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
