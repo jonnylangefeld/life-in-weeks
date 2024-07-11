@@ -6,15 +6,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from "./ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "./ui/calendar"
 import { format } from "date-fns"
 import { CalendarDots, Check, Prohibit } from "@phosphor-icons/react"
 import { Color } from "@/lib/types"
 import ColorItem from "./colorItem"
+import EmojiPicker, { Theme } from "emoji-picker-react"
 
 const eventSchema = z.object({
+  emoji: z.string(),
   title: z
     .string({
       required_error: "Please enter a title",
@@ -38,6 +40,7 @@ interface Props {
 export default function CreateEvent({ createEvent, setOpen }: Props) {
   const now = new Date()
   const [color, setColor] = useState<Color | null>(null)
+  const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
     defaultValues: {},
@@ -58,20 +61,48 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-6">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormDescription>The title of the life event</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-row gap-2">
+            <FormField
+              control={form.control}
+              name="emoji"
+              render={({ field }) => (
+                <div className="relative aspect-square ">
+                  <Button
+                    variant={"outline"}
+                    className={cn("flex items-center justify-center")}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      emojiPopoverOpen ? setEmojiPopoverOpen(false) : setEmojiPopoverOpen(true)
+                    }}
+                  >
+                    P
+                  </Button>
+                  <div
+                    className={cn(
+                      "absolute bottom-0 left-[50%] aspect-square w-auto min-w-min -translate-x-1/2 translate-y-full transform",
+                      !emojiPopoverOpen && "hidden"
+                    )}
+                  >
+                    <EmojiPicker theme={Theme.AUTO} />
+                  </div>
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className={cn("flex-grow")}>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription>The title of the life event</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="color"

@@ -30,4 +30,6 @@ PopoverContent.displayName = PopoverPrimitive.Content.displayName
 
 const PopoverArrow = PopoverPrimitive.Arrow
 
-export { Popover, PopoverTrigger, PopoverContent, PopoverArrow }
+const PopoverPortal = PopoverPrimitive.Portal
+
+export { Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverPortal }
