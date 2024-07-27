@@ -21,6 +21,8 @@ function dateRangeOverlap(from1: Date, to1: Date, from2: Date, to2: Date): boole
 }
 
 export default function Week(props: Props) {
+  const [open, setOpen] = useState(false)
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -81,14 +83,15 @@ export default function Week(props: Props) {
     return undefined
   }
 
-  const [open, setOpen] = useState(false)
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         className="group relative aspect-square w-16 min-w-[2px] sm:m-[1px]"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
+        onDoubleClick={() => console.log("double click")}
+        onTouchStart={() => console.log("touch start")}
+        onTouchEnd={() => console.log("touch end")}
       >
         <div
           className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
