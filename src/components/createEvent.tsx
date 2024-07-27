@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { useForm } from "react-hook-form"
@@ -41,6 +41,9 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
   const now = new Date()
   const [color, setColor] = useState<Color | null>(null)
   const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
+  const emojiPopoverContainerRef = useRef<HTMLDivElement>(null)
+  const emojiPopoverAnchorRef = useRef<HTMLDivElement>(null)
+  const [emojiPopoverPos, setEmojiPopoverPos] = useState({ x: 0, y: 0 })
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
     defaultValues: {},
@@ -54,20 +57,79 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
   }
 
   return (
-    <DialogContent>
+    <DialogContent ref={emojiPopoverAnchorRef}>
       <DialogHeader>
         <DialogTitle>Create a new life event!</DialogTitle>
         <DialogDescription>Foobar</DialogDescription>
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-6">
+          <FormItem>
+            <FormLabel>Emoji & Title</FormLabel>
+            <div className="flex flex-row gap-2">
+              <FormField
+                control={form.control}
+                name="emoji"
+                render={({ field }) => (
+                  <Popover modal onOpenChange={setEmojiPopoverOpen} open={emojiPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn("relative flex aspect-square items-center justify-center overflow-hidden")}
+                        >
+                          Pasdfasda
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="center"
+                      asChild
+                      onInteractOutside={(e) => {
+                        e.preventDefault()
+                      }}
+                      // className="z-40"
+                    >
+                      <div
+                        ref={emojiPopoverContainerRef}
+                        className={cn(
+                          "pointer-events-none relative h-[450px] w-[350px] border-none bg-red-500 opacity-30"
+                        )}
+                        onAnimationStart={() => {
+                          if (emojiPopoverContainerRef.current && emojiPopoverAnchorRef.current) {
+                            const emojiPopoverContainerRect = emojiPopoverContainerRef.current.getBoundingClientRect()
+                            const emojiPopoverRect = emojiPopoverAnchorRef.current.getBoundingClientRect()
+                            const x = emojiPopoverContainerRect.x - emojiPopoverRect.x
+                            const y = emojiPopoverContainerRect.y - emojiPopoverRect.y
+                            setEmojiPopoverPos({ x, y })
+                          }
+                        }}
+                      >
+                        {/* <div className={cn("absolute left-0 top-0")}>
+                          <EmojiPicker theme={Theme.AUTO} width={350} height={450} />
+                        </div> */}
+                      </div>
+                    </PopoverContent>
+                    <div
+                      className={cn("fixed z-50 w-auto min-w-min", !emojiPopoverOpen && "hidden")}
+                      style={{ left: `${Math.floor(emojiPopoverPos.x)}px`, top: `${Math.floor(emojiPopoverPos.y)}px` }}
+                    >
+                      <EmojiPicker theme={Theme.AUTO} width={350} height={450} onEmojiClick={(e) => console.log(e)} />
+                    </div>
+                  </Popover>
+                )}
+              />
+            </div>
+            <FormDescription>Choose an emoji and title for your life event</FormDescription>
+            <FormMessage />
+          </FormItem>
           <div className="flex flex-row gap-2">
             <FormField
               control={form.control}
               name="emoji"
               render={({ field }) => (
                 <div className="relative aspect-square ">
-                  <Button
+                  {/* <Button
                     variant={"outline"}
                     className={cn("flex items-center justify-center")}
                     onClick={(e) => {
@@ -83,8 +145,8 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                       !emojiPopoverOpen && "hidden"
                     )}
                   >
-                    <EmojiPicker theme={Theme.AUTO} />
-                  </div>
+                    <EmojiPicker theme={Theme.AUTO} width={350} height={450} />
+                  </div> */}
                 </div>
               )}
             />
