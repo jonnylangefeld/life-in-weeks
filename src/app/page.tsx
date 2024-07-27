@@ -27,6 +27,8 @@ export default function Home() {
 
         if (authError && authError.name !== AuthSessionMissingError.name) {
           console.log(authError, AuthSessionMissingError)
+          console.log(authError.name, AuthSessionMissingError.name)
+          console.log(authError.name === AuthSessionMissingError.name)
           toast.error("Authentication error:" + authError.message)
           return
         }
