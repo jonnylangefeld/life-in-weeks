@@ -1,28 +1,27 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
-import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from "./ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "./ui/calendar"
 import { format } from "date-fns"
-import { CalendarDots, Check, Confetti, Prohibit } from "@phosphor-icons/react"
+import { CalendarDots, Confetti, Prohibit } from "@phosphor-icons/react"
 import { Color } from "@/lib/types"
 import ColorItem from "./colorItem"
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import { toast } from "sonner"
 import { createClient } from "@/utils/supabase/client"
 import { Event } from "@/lib/database.types"
+import { Loader2 } from "lucide-react"
 
 const eventSchema = z.object({
   emoji: z.string().optional(),
   title: z
     .string({
-      // required_error: "Please enter a title",
       errorMap: (issue: z.ZodIssueOptionalMessage, ctx) => {
         if (issue.code == "invalid_type") {
           return { message: "Please enter a title" }
@@ -55,53 +54,60 @@ export default function CreateEvent(props: Props) {
   const now = new Date()
   const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
   const emojiPopoverContainerRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof eventSchema>>({
     defaultValues: {},
   })
 
-  async function onSubmit(values: z.infer<typeof eventSchema>) {
-    const result = eventSchema.safeParse(values)
-    if (!result.success) {
-      toast.error(
-        result.error.errors
-          .map((e) => {
-            return e.message
-          })
-          .join(" & ")
-      )
-      return
+  const onSubmit = async (values: z.infer<typeof eventSchema>) => {
+    setLoading(true)
+    try {
+      const result = eventSchema.safeParse(values)
+      if (!result.success) {
+        toast.error(
+          result.error.errors
+            .map((e) => {
+              return e.message
+            })
+            .join(" & ")
+        )
+        return
+      }
+
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
+
+      if (error) {
+        toast.error("Authentication error:" + error.message)
+        return
+      }
+
+      if (!user) {
+        toast.error("Please log in to create an event")
+        return
+      }
+
+      const event = {
+        user_id: user.id,
+        ...values,
+      } as Event
+      const { error: insertError } = await supabase.from("events").insert(event)
+      if (insertError) {
+        toast.error("Failed to create event: " + insertError.message)
+        return
+      }
+
+      toast.success(`Created "${[event.emoji, event.title].join(" ")}"`)
+
+      form.reset()
+      props.addEvent(event)
+      props.setOpen(false)
+    } finally {
+      console.log("done")
+      setLoading(false)
     }
-
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser()
-
-    if (error) {
-      toast.error("Authentication error:" + error.message)
-      return
-    }
-
-    if (!user) {
-      toast.error("Please log in to create an event")
-      return
-    }
-
-    const event = {
-      user_id: user.id,
-      ...values,
-    } as Event
-    const { error: insertError } = await supabase.from("events").insert(event)
-    if (insertError) {
-      toast.error("Failed to create event: " + insertError.message)
-      return
-    }
-
-    toast.success(`Created "${[event.emoji, event.title].join(" ")}"`)
-
-    form.reset()
-    props.addEvent(event)
-    props.setOpen(false)
   }
 
   const handleEmojiPopoverClick = useCallback((event: MouseEvent) => {
@@ -118,7 +124,7 @@ export default function CreateEvent(props: Props) {
     }
   }, [])
 
-  function openEmojiPopover(open: boolean) {
+  const openEmojiPopover = (open: boolean) => {
     setEmojiPopoverOpen(open)
     if (open) {
       document.addEventListener("click", handleEmojiPopoverClick, true)
@@ -282,7 +288,6 @@ export default function CreateEvent(props: Props) {
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          // disabled
                           className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
                         >
                           <CalendarDots className="h-full" size={32} />
@@ -298,7 +303,6 @@ export default function CreateEvent(props: Props) {
                         captionLayout="dropdown"
                         fromYear={now.getFullYear() - 100}
                         toYear={now.getFullYear()}
-                        // disabled
                         initialFocus
                       />
                     </PopoverContent>
@@ -310,7 +314,10 @@ export default function CreateEvent(props: Props) {
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? "Loading..." : "Submit"}
+            </Button>
           </DialogFooter>
         </form>
       </Form>
