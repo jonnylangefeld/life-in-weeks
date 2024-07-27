@@ -25,10 +25,7 @@ export default function Home() {
           error: authError,
         } = await supabase.auth.getUser()
 
-        if (authError && authError.name !== AuthSessionMissingError.name) {
-          console.log(authError, AuthSessionMissingError)
-          console.log(authError.name, AuthSessionMissingError.name)
-          console.log(authError.name === AuthSessionMissingError.name)
+        if (authError && authError.message !== "Auth session missing!") {
           toast.error("Authentication error:" + authError.message)
           return
         }
