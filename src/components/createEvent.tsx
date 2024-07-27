@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { useForm } from "react-hook-form"
@@ -10,54 +10,125 @@ import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from "./ui/pop
 import { cn } from "@/lib/utils"
 import { Calendar } from "./ui/calendar"
 import { format } from "date-fns"
-import { CalendarDots, Check, Prohibit } from "@phosphor-icons/react"
+import { CalendarDots, Check, Confetti, Prohibit } from "@phosphor-icons/react"
 import { Color } from "@/lib/types"
 import ColorItem from "./colorItem"
-import EmojiPicker, { Theme } from "emoji-picker-react"
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
+import { toast } from "sonner"
+import { createClient } from "@/utils/supabase/client"
+import { Event } from "@/lib/database.types"
 
 const eventSchema = z.object({
-  emoji: z.string(),
+  emoji: z.string().optional(),
   title: z
     .string({
-      required_error: "Please enter a title",
+      // required_error: "Please enter a title",
+      errorMap: (issue: z.ZodIssueOptionalMessage, ctx) => {
+        if (issue.code == "invalid_type") {
+          return { message: "Please enter a title" }
+        }
+        if (issue.code == "too_small") {
+          return { message: "The title should be more than 1 character" }
+        }
+        if (issue.code == "too_big") {
+          return { message: "The title should be less than 50 characters" }
+        }
+        return z.defaultErrorMap(issue, ctx)
+      },
     })
     .min(2)
     .max(50),
-  color: z.enum([Object.values(Color)[0], ...Object.values(Color).map((color) => color.toLowerCase())]),
+  color: z.enum([Object.values(Color)[0], ...Object.values(Color).map((color) => color.toLowerCase())]).optional(),
   date: z.date({
     required_error: "Please pick a date",
   }),
-  to_date: z.date({
-    required_error: "Please pick a date",
-  }),
+  to_date: z.date({}).optional(),
 })
 
 interface Props {
-  createEvent: () => Promise<void>
   setOpen: Dispatch<SetStateAction<boolean>>
+  addEvent: (event: Event) => void
 }
 
-export default function CreateEvent({ createEvent, setOpen }: Props) {
+export default function CreateEvent(props: Props) {
+  const supabase = createClient()
   const now = new Date()
-  const [color, setColor] = useState<Color | null>(null)
   const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
   const emojiPopoverContainerRef = useRef<HTMLDivElement>(null)
-  const emojiPopoverAnchorRef = useRef<HTMLDivElement>(null)
-  const [emojiPopoverPos, setEmojiPopoverPos] = useState({ x: 0, y: 0 })
   const form = useForm<z.infer<typeof eventSchema>>({
-    resolver: zodResolver(eventSchema),
     defaultValues: {},
   })
 
-  function onSubmit(values: z.infer<typeof eventSchema>) {
-    console.log(values)
-    createEvent()
-    setOpen(false)
+  async function onSubmit(values: z.infer<typeof eventSchema>) {
+    const result = eventSchema.safeParse(values)
+    if (!result.success) {
+      toast.error(
+        result.error.errors
+          .map((e) => {
+            return e.message
+          })
+          .join(" & ")
+      )
+      return
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
+
+    if (error) {
+      toast.error("Authentication error:" + error.message)
+      return
+    }
+
+    if (!user) {
+      toast.error("Please log in to create an event")
+      return
+    }
+
+    const event = {
+      user_id: user.id,
+      ...values,
+    } as Event
+    const { error: insertError } = await supabase.from("events").insert(event)
+    if (insertError) {
+      toast.error("Failed to create event: " + insertError.message)
+      return
+    }
+
+    toast.success(`Created "${[event.emoji, event.title].join(" ")}"`)
+
     form.reset()
+    props.addEvent(event)
+    props.setOpen(false)
+  }
+
+  const handleEmojiPopoverClick = useCallback((event: MouseEvent) => {
+    if (emojiPopoverContainerRef.current) {
+      const rect = emojiPopoverContainerRef.current.getBoundingClientRect()
+      if (
+        event.clientX < rect.left ||
+        event.clientX > rect.left + rect.width ||
+        event.clientY < rect.top ||
+        event.clientY > rect.top + rect.height
+      ) {
+        openEmojiPopover(false)
+      }
+    }
+  }, [])
+
+  function openEmojiPopover(open: boolean) {
+    setEmojiPopoverOpen(open)
+    if (open) {
+      document.addEventListener("click", handleEmojiPopoverClick, true)
+    } else {
+      document.removeEventListener("click", handleEmojiPopoverClick, true)
+    }
   }
 
   return (
-    <DialogContent ref={emojiPopoverAnchorRef}>
+    <DialogContent>
       <DialogHeader>
         <DialogTitle>Create a new life event!</DialogTitle>
         <DialogDescription>Foobar</DialogDescription>
@@ -71,100 +142,46 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                 control={form.control}
                 name="emoji"
                 render={({ field }) => (
-                  <Popover modal onOpenChange={setEmojiPopoverOpen} open={emojiPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn("relative flex aspect-square items-center justify-center overflow-hidden")}
-                        >
-                          Pasdfasda
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      align="center"
-                      asChild
-                      onInteractOutside={(e) => {
+                  <div className="relative ">
+                    <Button
+                      variant={"outline"}
+                      className={cn("flex aspect-square items-center justify-center p-0")}
+                      onClick={(e) => {
                         e.preventDefault()
+                        openEmojiPopover(true)
                       }}
-                      // className="z-40"
                     >
-                      <div
-                        ref={emojiPopoverContainerRef}
-                        className={cn(
-                          "pointer-events-none relative h-[450px] w-[350px] border-none bg-red-500 opacity-30"
-                        )}
-                        onAnimationStart={() => {
-                          if (emojiPopoverContainerRef.current && emojiPopoverAnchorRef.current) {
-                            const emojiPopoverContainerRect = emojiPopoverContainerRef.current.getBoundingClientRect()
-                            const emojiPopoverRect = emojiPopoverAnchorRef.current.getBoundingClientRect()
-                            const x = emojiPopoverContainerRect.x - emojiPopoverRect.x
-                            const y = emojiPopoverContainerRect.y - emojiPopoverRect.y
-                            setEmojiPopoverPos({ x, y })
-                          }
-                        }}
-                      >
-                        {/* <div className={cn("absolute left-0 top-0")}>
-                          <EmojiPicker theme={Theme.AUTO} width={350} height={450} />
-                        </div> */}
-                      </div>
-                    </PopoverContent>
+                      {field.value ? field.value : <Confetti className="h-full py-2 text-muted-foreground" size={32} />}
+                    </Button>
                     <div
-                      className={cn("fixed z-50 w-auto min-w-min", !emojiPopoverOpen && "hidden")}
-                      style={{ left: `${Math.floor(emojiPopoverPos.x)}px`, top: `${Math.floor(emojiPopoverPos.y)}px` }}
+                      ref={emojiPopoverContainerRef}
+                      className={cn(
+                        "absolute bottom-0 left-[50%] w-auto min-w-min -translate-x-1/2 translate-y-full transform",
+                        !emojiPopoverOpen && "hidden"
+                      )}
                     >
-                      <EmojiPicker theme={Theme.AUTO} width={350} height={450} onEmojiClick={(e) => console.log(e)} />
+                      <EmojiPicker
+                        theme={Theme.AUTO}
+                        width={350}
+                        height={450}
+                        onEmojiClick={(e: EmojiClickData) => field.onChange(e.emoji)}
+                      />
                     </div>
-                  </Popover>
+                  </div>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <Input type="text" value={field.value ? field.value : ""} onChange={field.onChange} />
+                )}
+              />
+              <FormMessage />
             </div>
             <FormDescription>Choose an emoji and title for your life event</FormDescription>
             <FormMessage />
           </FormItem>
-          <div className="flex flex-row gap-2">
-            <FormField
-              control={form.control}
-              name="emoji"
-              render={({ field }) => (
-                <div className="relative aspect-square ">
-                  {/* <Button
-                    variant={"outline"}
-                    className={cn("flex items-center justify-center")}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      emojiPopoverOpen ? setEmojiPopoverOpen(false) : setEmojiPopoverOpen(true)
-                    }}
-                  >
-                    P
-                  </Button>
-                  <div
-                    className={cn(
-                      "absolute bottom-0 left-[50%] aspect-square w-auto min-w-min -translate-x-1/2 translate-y-full transform",
-                      !emojiPopoverOpen && "hidden"
-                    )}
-                  >
-                    <EmojiPicker theme={Theme.AUTO} width={350} height={450} />
-                  </div> */}
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem className={cn("flex-grow")}>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription>The title of the life event</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
           <FormField
             control={form.control}
             name="color"
@@ -192,10 +209,9 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                         <ColorItem
                           key={c}
                           color={c}
-                          active={c === color}
+                          active={c === field.value}
                           onClick={() => {
                             field.onChange(c.toLowerCase())
-                            setColor(c)
                           }}
                         />
                       ))}
@@ -266,7 +282,7 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          disabled
+                          // disabled
                           className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
                         >
                           <CalendarDots className="h-full" size={32} />
@@ -282,7 +298,7 @@ export default function CreateEvent({ createEvent, setOpen }: Props) {
                         captionLayout="dropdown"
                         fromYear={now.getFullYear() - 100}
                         toYear={now.getFullYear()}
-                        disabled
+                        // disabled
                         initialFocus
                       />
                     </PopoverContent>

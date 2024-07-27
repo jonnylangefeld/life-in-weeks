@@ -7,36 +7,7 @@ import { useEffect, useState } from "react"
 import { Database } from "@/lib/database.types"
 import { User } from "@supabase/supabase-js"
 import { createClient } from "@/utils/supabase/client"
-
-export interface Event {
-  title?: string
-  emoji?: string
-  date: Date
-  toDate?: Date
-  color?:
-    | "slate"
-    | "gray"
-    | "zinc"
-    | "neutral"
-    | "stone"
-    | "red"
-    | "orange"
-    | "amber"
-    | "yellow"
-    | "lime"
-    | "green"
-    | "emerald"
-    | "teal"
-    | "cyan"
-    | "sky"
-    | "blue"
-    | "indigo"
-    | "violet"
-    | "purple"
-    | "fuchsia"
-    | "pink"
-    | "rose"
-}
+import { Event } from "@/lib/database.types"
 
 export default function Home() {
   const supabase = createClient()
@@ -75,7 +46,7 @@ export default function Home() {
               emoji: e.emoji,
               color: e.color,
               date: new Date(e.date),
-              toDate: e.to_date ? new Date(e.to_date) : undefined,
+              to_date: e.to_date ? new Date(e.to_date) : undefined,
             } as Event
           }) || []
         )
@@ -105,15 +76,15 @@ export default function Home() {
     setLoading(false)
   }
 
-  const createEvent = async () => {
-    console.log("Creating event")
+  const addEvent = (event: Event) => {
+    setEvents([...events, event])
   }
 
   return (
     <>
       <div className="flex flex-row items-center justify-between gap-1">
         <H1 className="whitespace-nowrap">My Life in Weeks</H1>
-        <Create loading={loading} user={user} createUser={createUser} createEvent={createEvent} />
+        <Create loading={loading} user={user} createUser={createUser} addEvent={addEvent} />
       </div>
       <Chart user={user} loading={loading} events={events} />
     </>
