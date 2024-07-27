@@ -2,6 +2,11 @@ import { Merge } from 'type-fest'
 import { Database as DatabaseGenerated, Tables } from './database-generated.types'
 export type { Json } from './database-generated.types'
 
+export type User = Merge<Tables<'users'>, {
+  // id: string
+  date_of_birth: Date
+}>
+
 export type Event = Merge<Tables<'events'>, {
   id?: string
   user_id?: string
@@ -40,10 +45,7 @@ export type Database = Merge<
     public: {
       Tables: {
         users: {
-          Row: {
-            id: string
-            date_of_birth: Date
-          }
+          Row: User
         }
         events: {
           Row: Event

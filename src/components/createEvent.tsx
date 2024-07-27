@@ -105,7 +105,6 @@ export default function CreateEvent(props: Props) {
       props.addEvent(event)
       props.setOpen(false)
     } finally {
-      console.log("done")
       setLoading(false)
     }
   }

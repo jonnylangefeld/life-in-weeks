@@ -4,28 +4,37 @@ import Chart from "@/components/chart"
 import Create from "@/components/create"
 import H1 from "@/components/ui/h1"
 import { useEffect, useState } from "react"
-import { Database } from "@/lib/database.types"
-import { User } from "@supabase/supabase-js"
+import { User } from "@/lib/database.types"
+import { AuthSessionMissingError } from "@supabase/supabase-js"
 import { createClient } from "@/utils/supabase/client"
 import { Event } from "@/lib/database.types"
+import { toast } from "sonner"
 
 export default function Home() {
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
-  const [authUser, setAuthUser] = useState<User | null>(null)
-  const [user, setUser] = useState<Database["public"]["Tables"]["users"]["Row"] | undefined>(undefined)
+  const [user, setUser] = useState<User | undefined>(undefined)
   const [events, setEvents] = useState<Event[]>([])
 
   useEffect(() => {
     const getUser = async () => {
       setLoading(true)
-      const {
-        data: { user: authUser },
-        error,
-      } = await supabase.auth.getUser()
+      try {
+        const {
+          data: { user: authUser },
+          error: authError,
+        } = await supabase.auth.getUser()
 
-      if (authUser) {
-        const { data: user } = await supabase
+        if (authError && authError.name !== AuthSessionMissingError.name) {
+          toast.error("Authentication error:" + authError.message)
+          return
+        }
+
+        if (!authUser) {
+          return
+        }
+
+        const { data: user, error } = await supabase
           .from("users")
           .select(
             `
@@ -35,6 +44,12 @@ export default function Home() {
           `
           )
           .single()
+
+        if (error) {
+          toast.error("Error fetching user:" + error.message)
+          return
+        }
+
         setUser({
           id: user?.id,
           date_of_birth: new Date(user?.date_of_birth),
@@ -50,31 +65,13 @@ export default function Home() {
             } as Event
           }) || []
         )
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
     getUser()
   }, [supabase])
-
-  const createUser = async (date: Date) => {
-    setLoading(true)
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.signInAnonymously()
-    setAuthUser(authUser)
-
-    const user: Database["public"]["Tables"]["users"]["Row"] = {
-      id: authUser?.id!,
-      date_of_birth: date,
-    }
-
-    const { error: postgressError } = await supabase.from("users").upsert([user])
-    setUser(user)
-    setLoading(false)
-  }
 
   const addEvent = (event: Event) => {
     setEvents([...events, event])
@@ -84,7 +81,7 @@ export default function Home() {
     <>
       <div className="flex flex-row items-center justify-between gap-1">
         <H1 className="whitespace-nowrap">My Life in Weeks</H1>
-        <Create loading={loading} user={user} createUser={createUser} addEvent={addEvent} />
+        <Create loading={loading} user={user} addEvent={addEvent} setUser={setUser} />
       </div>
       <Chart user={user} loading={loading} events={events} />
     </>

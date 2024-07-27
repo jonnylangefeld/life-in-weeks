@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { Button } from "./ui/button"
 import { Loader2 } from "lucide-react"
 import { Dialog, DialogTrigger } from "./ui/dialog"
-import { Database } from "@/lib/database.types"
+import { Database, User } from "@/lib/database.types"
 import CreateUser from "./createUser"
 import CreateEvent from "./createEvent"
 import { Event } from "@/lib/database.types"
@@ -10,8 +10,8 @@ import { Event } from "@/lib/database.types"
 interface Props {
   loading: boolean
   user?: Database["public"]["Tables"]["users"]["Row"]
-  createUser: (date: Date) => Promise<void>
   addEvent: (event: Event) => void
+  setUser: Dispatch<SetStateAction<User | undefined>>
 }
 
 export default function Create(props: Props) {
@@ -28,7 +28,7 @@ export default function Create(props: Props) {
       {props.user ? (
         <CreateEvent setOpen={setOpen} addEvent={props.addEvent} />
       ) : (
-        <CreateUser createUser={props.createUser} setOpen={setOpen} />
+        <CreateUser setOpen={setOpen} setUser={props.setUser} />
       )}
     </Dialog>
   )
