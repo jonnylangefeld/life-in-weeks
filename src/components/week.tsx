@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Data } from "./chart"
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { Event } from "@/app/page"
+import { Event } from "@/lib/database.types"
 
 interface Props {
   week: number
@@ -40,7 +40,7 @@ export default function Week(props: Props) {
     props.data.events.forEach((event) => {
       if (
         dateInRange(event.date, beginningOfWeek, endOfWeek) ||
-        (event.toDate && dateRangeOverlap(event.date, event.toDate, beginningOfWeek, endOfWeek))
+        (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
       ) {
         events.push(event)
       }
@@ -129,7 +129,7 @@ export default function Week(props: Props) {
               </p>
               <p className="text-muted-foreground">
                 {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
-                {event.toDate ? " - " + event.toDate.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
+                {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
               </p>
             </div>
           )

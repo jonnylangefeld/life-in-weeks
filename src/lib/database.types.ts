@@ -3,10 +3,12 @@ import { Database as DatabaseGenerated, Tables } from './database-generated.type
 export type { Json } from './database-generated.types'
 
 export type Event = Merge<Tables<'events'>, {
+  id?: string
+  user_id?: string
   date: Date
-  to_date: Date | undefined
-  emoji: string | undefined
-  color:
+  to_date?: Date
+  emoji?: string
+  color?:
   | "slate"
   | "gray"
   | "zinc"
@@ -29,7 +31,6 @@ export type Event = Merge<Tables<'events'>, {
   | "fuchsia"
   | "pink"
   | "rose"
-  | undefined
 }>
 
 // Override the type for a specific column in a view:
