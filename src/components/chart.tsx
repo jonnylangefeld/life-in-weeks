@@ -2,7 +2,7 @@ import { Database } from "@/lib/database.types"
 import Tick from "./tick"
 import Year from "./year"
 import { createClient } from "@/utils/supabase/client"
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import { Event } from "@/lib/database.types"
 
 export interface Data {
@@ -477,27 +477,29 @@ interface Props {
   events: Event[]
 }
 
-export default function Chart({ loading, user, events }: Props) {
+export default function Chart(props: Props) {
   let data: Data
 
-  if (loading) {
+  if (props.loading) {
     data = {
       birthDate: new Date(),
       events: [],
     }
-  } else if (!user) {
+  } else if (!props.user) {
     data = default_
   } else {
     data = {
-      birthDate: user.date_of_birth,
-      events,
+      birthDate: props.user.date_of_birth,
+      events: props.events,
     }
   }
   const age = new Date().getFullYear() - data.birthDate.getFullYear()
+  const currentTarget = useRef<HTMLButtonElement | null>(null)
+
   return (
     <div
       className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"
-      data-loading={loading}
+      data-loading={props.loading}
     >
       <div />
       <div className="flex flex-col">
@@ -517,7 +519,7 @@ export default function Chart({ loading, user, events }: Props) {
       </div>
       <div className="flex flex-col">
         {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
-          <Year key={index} year={index} data={data} />
+          <Year key={index} year={index} data={data} currentTarget={currentTarget} />
         ))}
       </div>
     </div>
