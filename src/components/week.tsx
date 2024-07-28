@@ -2,6 +2,19 @@ import { Dispatch, MutableRefObject, SetStateAction, useState } from "react"
 import { Data } from "./chart"
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Event } from "@/lib/database.types"
+import Link from "next/link"
+import { Pencil } from "@phosphor-icons/react"
+import {
+  Dialog,
+  DialogDescription,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+  DialogContent,
+} from "./ui/dialog"
+import CreateEvent from "./createEvent"
 
 interface Props {
   week: number
@@ -125,11 +138,14 @@ export default function Week(props: Props) {
       </PopoverTrigger>
       <PopoverContent
         side="top"
-        className="pointer-events-none text-sm shadow-lg"
+        className="text-sm shadow-lg"
         onWheel={(e) => {
           e.stopPropagation()
         }}
         onPointerDownOutside={() => {
+          props.currentTarget.current = null
+        }}
+        onEscapeKeyDown={() => {
           props.currentTarget.current = null
         }}
       >
@@ -144,14 +160,31 @@ export default function Week(props: Props) {
         </div>
         {events.map((event, index) => {
           return (
-            <div key={index}>
-              <p className="mt-2 text-lg">
-                {event.emoji} {event.title}
-              </p>
-              <p className="text-muted-foreground">
-                {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
-                {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
-              </p>
+            <div key={index} className="flex flex-row">
+              <div className="flex flex-grow flex-col">
+                <p className="mt-2 text-lg">
+                  {event.emoji} {event.title}
+                </p>
+                <p className="text-muted-foreground">
+                  {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
+                  {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
+                </p>
+              </div>
+              <Dialog>
+                <DialogTrigger>
+                  <div className="flex cursor-pointer flex-col justify-center">
+                    <Pencil className="m-2" size={20} />
+                  </div>
+                </DialogTrigger>
+                <CreateEvent
+                  setOpen={function (value: SetStateAction<boolean>): void {
+                    throw new Error("Function not implemented.")
+                  }}
+                  addEvent={function (event: Event): void {
+                    throw new Error("Function not implemented.")
+                  }}
+                />
+              </Dialog>
             </div>
           )
         })}
