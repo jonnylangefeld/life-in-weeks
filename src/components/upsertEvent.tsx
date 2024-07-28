@@ -47,16 +47,17 @@ const eventSchema = z.object({
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>
   addEvent: (event: Event) => void
+  event?: Event
 }
 
-export default function CreateEvent(props: Props) {
+export default function UpsertEvent(props: Props) {
   const supabase = createClient()
   const now = new Date()
   const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
   const emojiPopoverContainerRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof eventSchema>>({
-    defaultValues: {},
+    defaultValues: props.event,
   })
 
   const onSubmit = async (values: z.infer<typeof eventSchema>) => {
@@ -135,8 +136,10 @@ export default function CreateEvent(props: Props) {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Create a new life event!</DialogTitle>
-        <DialogDescription>Foobar</DialogDescription>
+        <DialogTitle>Live Event</DialogTitle>
+        <DialogDescription>
+          {props.event ? "Edit" : "Fill out"} the fields below and hit {props.event ? "'Save'" : "'Create'"}
+        </DialogDescription>
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-6">
@@ -271,7 +274,7 @@ export default function CreateEvent(props: Props) {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>The day this life event happened.</FormDescription>
+                  <FormDescription>The day this life event happened</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -306,7 +309,7 @@ export default function CreateEvent(props: Props) {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>Only necessary for multi day events.</FormDescription>
+                  <FormDescription>Only select for multi day events</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -315,7 +318,7 @@ export default function CreateEvent(props: Props) {
           <DialogFooter>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Loading..." : "Submit"}
+              {loading ? "Loading..." : props.event ? "Save" : "Create"}
             </Button>
           </DialogFooter>
         </form>

@@ -69,7 +69,7 @@ export default function CreateUser(props: Props) {
       <DialogFooter>
         <Button disabled={loading} onClick={createUser}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {loading ? "Loading..." : "Create!"}
+          {loading ? "Loading..." : "Create"}
         </Button>
       </DialogFooter>
     </DialogContent>

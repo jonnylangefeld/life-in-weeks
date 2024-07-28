@@ -1,26 +1,17 @@
-import { Dispatch, MutableRefObject, SetStateAction, useState } from "react"
+import { MutableRefObject, SetStateAction, useState } from "react"
 import { Data } from "./chart"
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { Event } from "@/lib/database.types"
-import Link from "next/link"
+import { Event, User } from "@/lib/database.types"
 import { Pencil } from "@phosphor-icons/react"
-import {
-  Dialog,
-  DialogDescription,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-  DialogContent,
-} from "./ui/dialog"
-import CreateEvent from "./createEvent"
+import { Dialog, DialogTrigger } from "./ui/dialog"
+import UpsertEvent from "./upsertEvent"
 
 interface Props {
   week: number
   year: number
   data: Data
   currentTarget: MutableRefObject<HTMLButtonElement | null>
+  user?: User
 }
 
 function dateInRange(date: Date, from: Date, to: Date): boolean {
@@ -35,7 +26,6 @@ function dateRangeOverlap(from1: Date, to1: Date, from2: Date, to2: Date): boole
 }
 
 export default function Week(props: Props) {
-  console.log("render week", props.year, props.week)
   const [open, setOpen] = useState(false)
 
   const today = new Date()
@@ -122,7 +112,7 @@ export default function Week(props: Props) {
         }}
       >
         <div
-          className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100 group-focus:z-50 group-focus:scale-[200%] group-focus:shadow-[0_0_10px] group-focus:shadow-background group-focus:duration-100` : "bg-accent"}`}
+          className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
         >
           {lived() && (
             <>
@@ -170,21 +160,24 @@ export default function Week(props: Props) {
                   {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
                 </p>
               </div>
-              <Dialog>
-                <DialogTrigger>
-                  <div className="flex cursor-pointer flex-col justify-center">
-                    <Pencil className="m-2" size={20} />
-                  </div>
-                </DialogTrigger>
-                <CreateEvent
-                  setOpen={function (value: SetStateAction<boolean>): void {
-                    throw new Error("Function not implemented.")
-                  }}
-                  addEvent={function (event: Event): void {
-                    throw new Error("Function not implemented.")
-                  }}
-                />
-              </Dialog>
+              {props.user && (
+                <Dialog>
+                  <DialogTrigger>
+                    <div className="flex cursor-pointer flex-col justify-center">
+                      <Pencil className="m-2" size={20} />
+                    </div>
+                  </DialogTrigger>
+                  <UpsertEvent
+                    event={event}
+                    setOpen={function (value: SetStateAction<boolean>): void {
+                      throw new Error("Function not implemented.")
+                    }}
+                    addEvent={function (event: Event): void {
+                      throw new Error("Function not implemented.")
+                    }}
+                  />
+                </Dialog>
+              )}
             </div>
           )
         })}

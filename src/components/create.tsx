@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react"
 import { Dialog, DialogTrigger } from "./ui/dialog"
 import { Database, User } from "@/lib/database.types"
 import CreateUser from "./createUser"
-import CreateEvent from "./createEvent"
+import UpsertEvent from "./upsertEvent"
 import { Event } from "@/lib/database.types"
 
 interface Props {
@@ -26,7 +26,7 @@ export default function Create(props: Props) {
         </Button>
       </DialogTrigger>
       {props.user ? (
-        <CreateEvent setOpen={setOpen} addEvent={props.addEvent} />
+        <UpsertEvent setOpen={setOpen} addEvent={props.addEvent} />
       ) : (
         <CreateUser setOpen={setOpen} setUser={props.setUser} />
       )}

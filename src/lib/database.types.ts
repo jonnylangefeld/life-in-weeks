@@ -9,6 +9,7 @@ export type User = Merge<Tables<'users'>, {
 
 export type Event = Merge<Tables<'events'>, {
   id?: string
+  title: string
   user_id?: string
   date: Date
   to_date?: Date

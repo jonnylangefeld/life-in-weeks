@@ -1,8 +1,7 @@
-import { Database } from "@/lib/database.types"
+import { User } from "@/lib/database.types"
 import Tick from "./tick"
 import Year from "./year"
-import { createClient } from "@/utils/supabase/client"
-import { use, useEffect, useRef, useState } from "react"
+import { useRef } from "react"
 import { Event } from "@/lib/database.types"
 
 export interface Data {
@@ -473,7 +472,7 @@ const default_: Data = {
 
 interface Props {
   loading: boolean
-  user?: Database["public"]["Tables"]["users"]["Row"]
+  user?: User
   events: Event[]
 }
 
@@ -519,7 +518,7 @@ export default function Chart(props: Props) {
       </div>
       <div className="flex flex-col">
         {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
-          <Year key={index} year={index} data={data} currentTarget={currentTarget} />
+          <Year key={index} year={index} data={data} currentTarget={currentTarget} user={props.user} />
         ))}
       </div>
     </div>
