@@ -1,0 +1,66 @@
+name: Main
+
+on:
+  push:
+
+jobs:
+  lint-test:
+    name: Lint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Node.js 21
+        uses: actions/setup-node@v1
+        with:
+          node-version: 21.7.1
+      - name: Install Dependencies
+        run: npm install
+      - name: Run Lint
+        run: npm run lint
+  check-and-push-db-updates:
+    runs-on: ubuntu-22.04
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.STAGING_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: supabase/setup-cli@v1
+      - name: Start Supabase local development setup
+        run: supabase start
+      - name: Lint database
+        run: supabase db lint
+      - name: Verify generated types are up-to-date
+        run: |
+          npm run db-types
+          if [ "$(git diff --ignore-space-at-eol types.ts | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff
+            exit 1
+          fi
+      - name: Link Supabase --project-ref
+        if: success()
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+      - name: Push database updates
+        if: success()
+        run: supabase db push
+  push-db-updates-to-prod:
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - lint-test
+      - check-and-push-db-updates
+    runs-on: ubuntu-22.04
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.PRODUCTION_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: supabase/setup-cli@v1
+      - name: Link Supabase --project-ref
+        if: success()
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+      - name: Push database updates
+        if: success()
+        run: supabase db push
