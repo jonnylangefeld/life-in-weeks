@@ -54,6 +54,6 @@ CREATE TABLE
 
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow logged-in read access for events" ON events for
+CREATE POLICY "Allow logged-in access for events" ON events for
 ALL
   USING (auth.uid () = user_id);
