@@ -1,12 +1,12 @@
 "use client"
 
-import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import * as React from "react"
 import { DayPicker, DropdownProps } from "react-day-picker"
+import { buttonVariants } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -47,6 +47,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ...classNames,
       }}
       components={{
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         Dropdown: ({ value, onChange, children, ...props }: DropdownProps) => {
           const options = React.Children.toArray(children) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[]
           const selected = options.find((child) => child.props.value === value)
@@ -80,8 +81,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
             </Select>
           )
         },
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: ({ ...props }) => <ChevronLeft className="size-4" />, // eslint-disable-line @typescript-eslint/no-unused-vars
+        IconRight: ({ ...props }) => <ChevronRight className="size-4" />, // eslint-disable-line @typescript-eslint/no-unused-vars
       }}
       {...props}
     />

@@ -1,11 +1,11 @@
+import { Loader2 } from "lucide-react"
 import { Dispatch, SetStateAction, useState } from "react"
-import { Button } from "./ui/button"
-import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
-import { Calendar } from "./ui/calendar"
 import { toast } from "sonner"
 import { User } from "@/lib/database.types"
 import { createClient } from "@/utils/supabase/client"
-import { Loader2 } from "lucide-react"
+import { Button } from "./ui/button"
+import { Calendar } from "./ui/calendar"
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>
@@ -31,8 +31,13 @@ export default function CreateUser(props: Props) {
         return
       }
 
+      if (!authUser) {
+        toast.error("Authentication error: User not found")
+        return
+      }
+
       const user: User = {
-        id: authUser?.id!,
+        id: authUser.id!,
         date_of_birth: date!,
       }
 
@@ -68,7 +73,7 @@ export default function CreateUser(props: Props) {
       </div>
       <DialogFooter>
         <Button disabled={loading} onClick={createUser}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {loading ? "Loading..." : "Create"}
         </Button>
       </DialogFooter>

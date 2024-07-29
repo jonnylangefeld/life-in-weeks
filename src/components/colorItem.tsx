@@ -1,5 +1,5 @@
-import { Color } from "@/lib/types"
 import { Check } from "@phosphor-icons/react"
+import { Color } from "@/lib/types"
 
 interface Props extends React.HTMLProps<HTMLButtonElement> {
   color: Color
@@ -13,7 +13,7 @@ export default function ColorItem({ color, active, onClick }: Props) {
       onClick={onClick}
     >
       <span
-        className={`flex h-5 w-5 items-center justify-center rounded-full bg-${color.toLowerCase()}-200 dark:bg-${color.toLowerCase()}-300`}
+        className={`bg- flex size-5 items-center justify-center rounded-full${color.toLowerCase()}-200 dark:bg-${color.toLowerCase()}-300`}
       >
         {active && <Check size={32} className="h-5/6 dark:invert" />}
       </span>

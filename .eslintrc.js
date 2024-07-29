@@ -4,15 +4,7 @@ const fs = require("fs")
 
 module.exports = {
   ignorePatterns: ["**/components/external/supabase/**"],
-  extends: [
-    "eslint:recommended",
-    "plugin:jsdoc/recommended",
-    "next",
-    "prettier",
-    "react-app/jest",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:tailwindcss/recommended",
-  ],
+  extends: ["eslint:recommended", "next", "plugin:@typescript-eslint/recommended", "plugin:tailwindcss/recommended"],
   parserOptions: {
     babelOptions: {
       presets: [require.resolve("next/babel")],
@@ -21,10 +13,10 @@ module.exports = {
   rules: {
     "no-empty": "off",
     "tailwindcss/migration-from-tailwind-2": "off",
+    "tailwindcss/no-custom-classname": "off",
     "testing-library/prefer-screen-queries": "off",
     "@next/next/no-html-link-for-pages": "off",
-    "jsdoc/require-param-type": "off",
-    "jsdoc/require-returns-type": "off",
+    "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {

@@ -1,8 +1,7 @@
-import { User } from "@/lib/database.types"
+import { useRef } from "react"
+import { Event, User } from "@/lib/database.types"
 import Tick from "./tick"
 import Year from "./year"
-import { useRef } from "react"
-import { Event } from "@/lib/database.types"
 
 export interface Data {
   birthDate: Date

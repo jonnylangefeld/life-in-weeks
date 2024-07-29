@@ -1,22 +1,22 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
-import { Button } from "./ui/button"
-import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
+import { CalendarDots, Confetti, Prohibit } from "@phosphor-icons/react"
+import { format } from "date-fns"
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
+import { Loader2 } from "lucide-react"
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
+import { Event } from "@/lib/database.types"
+import { Color } from "@/lib/types"
+import { cn, parseDBEvent } from "@/lib/utils"
+import { createClient } from "@/utils/supabase/client"
+import ColorItem from "./colorItem"
+import { Button } from "./ui/button"
+import { Calendar } from "./ui/calendar"
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { cn, parseDBEvent } from "@/lib/utils"
-import { Calendar } from "./ui/calendar"
-import { format } from "date-fns"
-import { CalendarDots, Confetti, Prohibit } from "@phosphor-icons/react"
-import { Color } from "@/lib/types"
-import ColorItem from "./colorItem"
-import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
-import { toast } from "sonner"
-import { createClient } from "@/utils/supabase/client"
-import { Event, User } from "@/lib/database.types"
-import { Loader2 } from "lucide-react"
 
 const eventSchema = z.object({
   emoji: z.string().optional(),
@@ -131,28 +131,36 @@ export default function UpsertEvent(props: Props) {
     }
   }
 
-  const handleEmojiPopoverClick = useCallback((event: MouseEvent) => {
-    if (emojiPopoverContainerRef.current) {
-      const rect = emojiPopoverContainerRef.current.getBoundingClientRect()
-      if (
-        event.clientX < rect.left ||
-        event.clientX > rect.left + rect.width ||
-        event.clientY < rect.top ||
-        event.clientY > rect.top + rect.height
-      ) {
-        openEmojiPopover(false)
-      }
-    }
-  }, [])
+  let openEmojiPopover = useCallback((_: boolean) => {}, [])
 
-  const openEmojiPopover = (open: boolean) => {
-    setEmojiPopoverOpen(open)
-    if (open) {
-      document.addEventListener("click", handleEmojiPopoverClick, true)
-    } else {
-      document.removeEventListener("click", handleEmojiPopoverClick, true)
-    }
-  }
+  const handleEmojiPopoverClick = useCallback(
+    (event: MouseEvent) => {
+      if (emojiPopoverContainerRef.current) {
+        const rect = emojiPopoverContainerRef.current.getBoundingClientRect()
+        if (
+          event.clientX < rect.left ||
+          event.clientX > rect.left + rect.width ||
+          event.clientY < rect.top ||
+          event.clientY > rect.top + rect.height
+        ) {
+          openEmojiPopover(false)
+        }
+      }
+    },
+    [openEmojiPopover]
+  )
+
+  openEmojiPopover = useCallback(
+    (open: boolean) => {
+      setEmojiPopoverOpen(open)
+      if (open) {
+        document.addEventListener("click", handleEmojiPopoverClick, true)
+      } else {
+        document.removeEventListener("click", handleEmojiPopoverClick, true)
+      }
+    },
+    [handleEmojiPopoverClick]
+  )
 
   return (
     <DialogContent>
@@ -250,7 +258,7 @@ export default function UpsertEvent(props: Props) {
                           field.onChange(undefined)
                         }}
                       >
-                        <span className={`flex h-5 w-5 items-center justify-center rounded-full`}>
+                        <span className={`flex size-5 items-center justify-center rounded-full`}>
                           <Prohibit size={32} />
                         </span>
                         No color
@@ -343,7 +351,7 @@ export default function UpsertEvent(props: Props) {
               </Button>
             )}
             <Button type="submit" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
               {loading ? "Loading..." : props.event ? "Save" : "Create"}
             </Button>
           </DialogFooter>

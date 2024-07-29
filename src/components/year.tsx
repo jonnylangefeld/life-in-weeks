@@ -1,8 +1,8 @@
-import { Dispatch, MutableRefObject, SetStateAction } from "react"
+import { MutableRefObject } from "react"
+import { Event, User } from "@/lib/database.types"
 import { Data } from "./chart"
 import Tick from "./tick"
 import Week from "./week"
-import { Event, User } from "@/lib/database.types"
 
 interface Props {
   year: number

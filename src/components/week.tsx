@@ -1,9 +1,9 @@
-import { MutableRefObject, SetStateAction, useState } from "react"
-import { Data } from "./chart"
-import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { Event, User } from "@/lib/database.types"
 import { Pencil } from "@phosphor-icons/react"
+import { MutableRefObject, useState } from "react"
+import { Event, User } from "@/lib/database.types"
+import { Data } from "./chart"
 import { Dialog, DialogTrigger } from "./ui/dialog"
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
 import UpsertEvent from "./upsertEvent"
 
 interface Props {
@@ -47,8 +47,7 @@ const EditDialog: React.FC<Props & { event: Event }> = (props) => {
 }
 
 export default function Week(props: Props) {
-  const [popoverOpen, setPopoverOpen] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [open, setOpen] = useState(false)
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -92,7 +91,7 @@ export default function Week(props: Props) {
     }
     if (emoji) {
       return (
-        <svg viewBox="0 0 1000 1000" className="z-40 h-full w-full">
+        <svg viewBox="0 0 1000 1000" className="z-40 size-full">
           <text
             style={{
               fontSize: 800,
@@ -111,17 +110,17 @@ export default function Week(props: Props) {
   }
 
   return (
-    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        className="group relative aspect-square w-16 min-w-[2px] sm:m-[1px]"
+        className="group relative aspect-square w-16 min-w-[2px] sm:m-px"
         onMouseEnter={() => {
           if (!props.currentTarget.current) {
-            setPopoverOpen(true)
+            setOpen(true)
           }
         }}
         onMouseLeave={() => {
           if (!props.currentTarget.current) {
-            setPopoverOpen(false)
+            setOpen(false)
           }
         }}
         onDoubleClick={() => console.log("double click")}
@@ -129,16 +128,16 @@ export default function Week(props: Props) {
         onTouchEnd={() => console.log("touch end")}
         onClick={(e) => {
           e.preventDefault()
-          setPopoverOpen(true)
+          setOpen(true)
           props.currentTarget.current = e.currentTarget
         }}
       >
         <div
-          className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+          className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
         >
           {lived() && (
             <>
-              <div className="absolute bottom-0 grid h-full w-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
+              <div className="absolute bottom-0 grid size-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
                 {colors.map((color, index) => (
                   <div key={index} className={`bg-${color}-300 dark:bg-${color}-200`}></div>
                 ))}

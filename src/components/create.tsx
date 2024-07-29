@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useState } from "react"
-import { Button } from "./ui/button"
 import { Loader2 } from "lucide-react"
-import { Dialog, DialogTrigger } from "./ui/dialog"
+import { Dispatch, SetStateAction, useState } from "react"
 import { Database, User } from "@/lib/database.types"
-import CreateUser from "./createUser"
-import UpsertEvent from "./upsertEvent"
 import { Event } from "@/lib/database.types"
+import CreateUser from "./createUser"
+import { Button } from "./ui/button"
+import { Dialog, DialogTrigger } from "./ui/dialog"
+import UpsertEvent from "./upsertEvent"
 
 interface Props {
   loading: boolean
@@ -21,7 +21,7 @@ export default function Create(props: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button disabled={props.loading}>
-          {props.loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {props.loading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {props.loading ? "Loading..." : props.user ? "Create event" : "✨ Create your own!"}
         </Button>
       </DialogTrigger>

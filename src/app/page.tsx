@@ -1,15 +1,13 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import Chart from "@/components/chart"
 import Create from "@/components/create"
 import H1 from "@/components/ui/h1"
-import { useEffect, useState } from "react"
-import { User } from "@/lib/database.types"
-import { AuthSessionMissingError } from "@supabase/supabase-js"
-import { createClient } from "@/utils/supabase/client"
-import { Event } from "@/lib/database.types"
-import { toast } from "sonner"
+import { Event, User } from "@/lib/database.types"
 import { parseDBEvent } from "@/lib/utils"
+import { createClient } from "@/utils/supabase/client"
 
 export default function Home() {
   const supabase = createClient()
