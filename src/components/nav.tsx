@@ -1,9 +1,9 @@
 "use client"
 
+import { Icon } from "@phosphor-icons/react"
+import { Gauge, Gear, ProjectorScreenChart, UserCircle } from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Gauge, Gear, ProjectorScreenChart, UserCircle } from "@phosphor-icons/react/dist/ssr"
-import { Icon } from "@phosphor-icons/react"
 
 export default function Nav() {
   const pathname = usePathname()

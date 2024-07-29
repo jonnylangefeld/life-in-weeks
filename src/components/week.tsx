@@ -1,11 +1,19 @@
-import { useState } from "react"
-import { Data, Event } from "./chart"
+import { PencilSimple } from "@phosphor-icons/react"
+import { MutableRefObject, useState } from "react"
+import { Event, User } from "@/lib/database.types"
+import { Data } from "./chart"
+import { Dialog, DialogTrigger } from "./ui/dialog"
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "./ui/popover"
+import UpsertEvent from "./upsertEvent"
 
 interface Props {
   week: number
   year: number
   data: Data
+  currentTarget: MutableRefObject<HTMLButtonElement | null>
+  user?: User
+  upsertEvent: (event: Event) => void
+  deleteEvent?: (event: Event) => void
 }
 
 function dateInRange(date: Date, from: Date, to: Date): boolean {
@@ -19,7 +27,28 @@ function dateRangeOverlap(from1: Date, to1: Date, from2: Date, to2: Date): boole
   )
 }
 
+const EditDialog: React.FC<Props & { event: Event }> = (props) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>
+        <div className="flex h-full cursor-pointer flex-col justify-center text-muted-foreground hover:text-foreground">
+          <PencilSimple size={20} />
+        </div>
+      </DialogTrigger>
+      <UpsertEvent
+        event={props.event}
+        setOpen={setOpen}
+        upsertEvent={props.upsertEvent}
+        deleteEvent={props.deleteEvent}
+      />
+    </Dialog>
+  )
+}
+
 export default function Week(props: Props) {
+  const [open, setOpen] = useState(false)
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -34,12 +63,12 @@ export default function Week(props: Props) {
     return endOfWeek.getTime() < today.getTime()
   }
 
-  const getEvents = (): Event[] => {
+  const filterEvents = (): Event[] => {
     const events: Event[] = []
     props.data.events.forEach((event) => {
       if (
         dateInRange(event.date, beginningOfWeek, endOfWeek) ||
-        (event.toDate && dateRangeOverlap(event.date, event.toDate, beginningOfWeek, endOfWeek))
+        (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
       ) {
         events.push(event)
       }
@@ -50,7 +79,7 @@ export default function Week(props: Props) {
     return events
   }
 
-  const events = getEvents()
+  const events = filterEvents()
   const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
 
   const tileContent = (): JSX.Element | undefined => {
@@ -62,7 +91,7 @@ export default function Week(props: Props) {
     }
     if (emoji) {
       return (
-        <svg viewBox="0 0 1000 1000" className="z-40 h-full w-full">
+        <svg viewBox="0 0 1000 1000" className="z-40 size-full">
           <text
             style={{
               fontSize: 800,
@@ -80,21 +109,42 @@ export default function Week(props: Props) {
     return undefined
   }
 
-  const [open, setOpen] = useState(false)
+  const onOpenChange = (open: boolean) => {
+    setOpen(open)
+    if (!open) {
+      props.currentTarget.current = null
+    }
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
-        className="group relative aspect-square w-16 min-w-[2px] sm:m-[1px]"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
+        className="group relative aspect-square w-16 min-w-[2px] sm:m-px"
+        onMouseEnter={() => {
+          if (!props.currentTarget.current) {
+            setOpen(true)
+          }
+        }}
+        onMouseLeave={() => {
+          if (!props.currentTarget.current) {
+            setOpen(false)
+          }
+        }}
+        onDoubleClick={() => console.log("double click")}
+        onTouchStart={() => console.log("touch start")}
+        onTouchEnd={() => console.log("touch end")}
+        onClick={(e) => {
+          e.preventDefault()
+          setOpen(true)
+          props.currentTarget.current = e.currentTarget
+        }}
       >
         <div
-          className={`absolute bottom-0 flex h-full w-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+          className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
         >
           {lived() && (
             <>
-              <div className="absolute bottom-0 grid h-full w-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
+              <div className="absolute bottom-0 grid size-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
                 {colors.map((color, index) => (
                   <div key={index} className={`bg-${color}-300 dark:bg-${color}-200`}></div>
                 ))}
@@ -106,7 +156,7 @@ export default function Week(props: Props) {
       </PopoverTrigger>
       <PopoverContent
         side="top"
-        className="pointer-events-none text-sm shadow-lg"
+        className="text-sm shadow-lg"
         onWheel={(e) => {
           e.stopPropagation()
         }}
@@ -122,14 +172,17 @@ export default function Week(props: Props) {
         </div>
         {events.map((event, index) => {
           return (
-            <div key={index}>
-              <p className="mt-2 text-lg">
-                {event.emoji} {event.title}
-              </p>
-              <p className="text-muted-foreground">
-                {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
-                {event.toDate ? " - " + event.toDate.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
-              </p>
+            <div key={index} className="flex flex-row">
+              <div className="flex flex-grow flex-col">
+                <p className="mt-2 text-lg">
+                  {event.emoji} {event.title}
+                </p>
+                <p className="text-muted-foreground">
+                  {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
+                  {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
+                </p>
+              </div>
+              {props.user && <EditDialog {...props} event={event} />}
             </div>
           )
         })}

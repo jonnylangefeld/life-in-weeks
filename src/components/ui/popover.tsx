@@ -1,7 +1,8 @@
 "use client"
 
-import * as React from "react"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
+import { X } from "lucide-react"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -23,11 +24,19 @@ const PopoverContent = React.forwardRef<
         className
       )}
       {...props}
-    />
+    >
+      {props.children}
+      <PopoverPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+        <X className="size-4" />
+        <span className="sr-only">Close</span>
+      </PopoverPrimitive.Close>
+    </PopoverPrimitive.Content>
   </PopoverPrimitive.Portal>
 ))
 PopoverContent.displayName = PopoverPrimitive.Content.displayName
 
 const PopoverArrow = PopoverPrimitive.Arrow
 
-export { Popover, PopoverTrigger, PopoverContent, PopoverArrow }
+const PopoverPortal = PopoverPrimitive.Portal
+
+export { Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverPortal }

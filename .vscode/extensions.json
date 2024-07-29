@@ -1,9 +1,5 @@
 {
   "recommendations": [
-    "orta.vscode-jest",
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "dsznajder.es7-react-js-snippets",
-    "bradlc.vscode-tailwindcss"
+    "denoland.vscode-deno"
   ]
 }

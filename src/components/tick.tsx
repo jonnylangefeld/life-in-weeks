@@ -1,10 +1,10 @@
 export default function Tick({ t, vertical, minIndex }: { t: number; vertical?: boolean; minIndex?: number }) {
   const emphasize = t % 5 == 0
   return (
-    <div className="relative aspect-square w-16 min-w-[2px] sm:m-[1px]">
-      <div className="absolute h-full w-full">
+    <div className="relative aspect-square w-16 min-w-[2px] sm:m-px">
+      <div className="absolute size-full">
         {t >= (minIndex || 0) && (
-          <svg viewBox="0 0 100 100" className="h-full w-full">
+          <svg viewBox="0 0 100 100" className="size-full">
             <text
               style={{
                 fontSize: emphasize ? 60 : 50,

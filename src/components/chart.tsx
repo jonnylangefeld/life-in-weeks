@@ -1,44 +1,14 @@
-"use client"
-
+import { useRef } from "react"
+import { Event, User } from "@/lib/database.types"
 import Tick from "./tick"
 import Year from "./year"
-
-export interface Event {
-  title?: string
-  emoji?: string
-  date: Date
-  toDate?: Date
-  color?:
-    | "slate"
-    | "gray"
-    | "zinc"
-    | "neutral"
-    | "stone"
-    | "red"
-    | "orange"
-    | "amber"
-    | "yellow"
-    | "lime"
-    | "green"
-    | "emerald"
-    | "teal"
-    | "cyan"
-    | "sky"
-    | "blue"
-    | "indigo"
-    | "violet"
-    | "purple"
-    | "fuchsia"
-    | "pink"
-    | "rose"
-}
 
 export interface Data {
   birthDate: Date
   events: Event[]
 }
 
-const data: Data = {
+const default_: Data = {
   birthDate: new Date("1991-07-22"),
   // birthDate: new Date("1988-12-06"),
   // birthDate: new Date("1955-12-09"),
@@ -52,7 +22,7 @@ const data: Data = {
     {
       title: "Elementary school",
       date: new Date("1998-09-15"),
-      toDate: new Date("2002-07-31"),
+      to_date: new Date("2002-07-31"),
       color: "indigo",
       emoji: "🍎",
     },
@@ -64,7 +34,7 @@ const data: Data = {
     {
       title: "Gymnasium",
       date: new Date("2002-09-17"),
-      toDate: new Date("2011-03-06"),
+      to_date: new Date("2011-03-06"),
       color: "violet",
       emoji: "🏫",
     },
@@ -91,7 +61,7 @@ const data: Data = {
     {
       title: "College",
       date: new Date("2011-10-10"),
-      toDate: new Date("2014-09-30"),
+      to_date: new Date("2014-09-30"),
       color: "purple",
       emoji: "👨🏼‍🎓",
     },
@@ -108,7 +78,7 @@ const data: Data = {
     {
       title: "Internship in New York",
       date: new Date("2013-06-14"),
-      toDate: new Date("2013-08-14"),
+      to_date: new Date("2013-08-14"),
       color: "orange",
       emoji: "🗽",
     },
@@ -120,28 +90,28 @@ const data: Data = {
     {
       title: "Greece Trip",
       date: new Date("2014-08-18"),
-      toDate: new Date("2014-08-24"),
+      to_date: new Date("2014-08-24"),
       color: "amber",
       emoji: "🇬🇷",
     },
     {
       title: "IBM",
       date: new Date("2014-10-01"),
-      toDate: new Date("2017-04-01"),
+      to_date: new Date("2017-04-01"),
       color: "fuchsia",
       emoji: "👨🏼‍💻",
     },
     {
       title: "London Trip",
       date: new Date("2015-03-16"),
-      toDate: new Date("2015-03-19"),
+      to_date: new Date("2015-03-19"),
       color: "amber",
       emoji: "🇬🇧",
     },
     {
       title: "French Riviera bike trip 🚴🏼‍♂️",
       date: new Date("2015-05-15"),
-      toDate: new Date("2015-05-24"),
+      to_date: new Date("2015-05-24"),
       color: "yellow",
       emoji: "🇫🇷",
     },
@@ -153,77 +123,77 @@ const data: Data = {
     {
       title: "Italy family trip",
       date: new Date("2015-08-16"),
-      toDate: new Date("2015-08-20"),
+      to_date: new Date("2015-08-20"),
       color: "amber",
       emoji: "🇮🇹",
     },
     {
       title: "Sweden trip",
       date: new Date("2016-02-14"),
-      toDate: new Date("2016-02-18"),
+      to_date: new Date("2016-02-18"),
       color: "yellow",
       emoji: "🇸🇪",
     },
     {
       title: "Sweden trip",
       date: new Date("2016-03-18"),
-      toDate: new Date("2016-03-23"),
+      to_date: new Date("2016-03-23"),
       color: "amber",
       emoji: "🇸🇪",
     },
     {
       title: "Sweden trip",
       date: new Date("2016-04-03"),
-      toDate: new Date("2016-04-07"),
+      to_date: new Date("2016-04-07"),
       color: "yellow",
       emoji: "🇸🇪",
     },
     {
       title: "Sweden trip",
       date: new Date("2016-04-17"),
-      toDate: new Date("2016-04-21"),
+      to_date: new Date("2016-04-21"),
       color: "amber",
       emoji: "🇸🇪",
     },
     {
       title: "Sweden trip",
       date: new Date("2016-04-28"),
-      toDate: new Date("2016-05-08"),
+      to_date: new Date("2016-05-08"),
       color: "yellow",
       emoji: "🇸🇪",
     },
     {
       title: "Portugal surf trip with Moritz",
       date: new Date("2016-07-12"),
-      toDate: new Date("2016-07-19"),
+      to_date: new Date("2016-07-19"),
       color: "amber",
       emoji: "🇵🇹",
     },
     {
       title: "Israel trip",
       date: new Date("2016-11-05"),
-      toDate: new Date("2016-11-19"),
+      to_date: new Date("2016-11-19"),
       color: "yellow",
       emoji: "🇮🇱",
     },
     {
       title: "Tesla Norway road trip",
       date: new Date("2016-12-25"),
-      toDate: new Date("2017-01-02"),
+      to_date: new Date("2017-01-02"),
       color: "amber",
       emoji: "🇳🇴",
     },
     {
       title: "Cuba trip",
       date: new Date("2017-01-14"),
-      toDate: new Date("2017-01-28"),
+      to_date: new Date("2017-01-28"),
       color: "yellow",
       emoji: "🇨🇺",
     },
     {
       title: "Daimler",
       date: new Date("2017-04-03"),
-      toDate: new Date("2017-07-31"),
+      to_date: new Date("2017-07-31"),
       color: "pink",
       emoji: "⭐️",
     },
@@ -235,14 +205,14 @@ const data: Data = {
     {
       title: "MBRDNA",
       date: new Date("2017-09-05"),
-      toDate: new Date("2020-03-06"),
+      to_date: new Date("2020-03-06"),
       color: "red",
       emoji: "💼",
     },
     {
       title: "Germany trip",
       date: new Date("2017-10-04"),
-      toDate: new Date("2017-10-12"),
+      to_date: new Date("2017-10-12"),
       color: "green",
       emoji: "🇩🇪",
     },
@@ -254,14 +224,14 @@ const data: Data = {
     {
       title: "China trip",
       date: new Date("2017-10-27"),
-      toDate: new Date("2017-11-02"),
+      to_date: new Date("2017-11-02"),
       color: "emerald",
       emoji: "🇨🇳",
     },
     {
       title: "Germany trip",
       date: new Date("2017-11-08"),
-      toDate: new Date("2017-11-17"),
+      to_date: new Date("2017-11-17"),
       color: "green",
       emoji: "🇩🇪",
     },
@@ -273,35 +243,35 @@ const data: Data = {
     {
       title: "Germany trip",
       date: new Date("2018-01-16"),
-      toDate: new Date("2018-01-23"),
+      to_date: new Date("2018-01-23"),
       color: "emerald",
       emoji: "🇩🇪",
     },
     {
       title: "Germany trip",
       date: new Date("2018-02-16"),
-      toDate: new Date("2018-02-23"),
+      to_date: new Date("2018-02-23"),
       color: "green",
       emoji: "🇩🇪",
     },
     {
       title: "China trip",
       date: new Date("2018-03-05"),
-      toDate: new Date("2018-03-09"),
+      to_date: new Date("2018-03-09"),
       color: "emerald",
       emoji: "🇨🇳",
     },
     {
       title: "China trip",
       date: new Date("2018-04-16"),
-      toDate: new Date("2018-04-20"),
+      to_date: new Date("2018-04-20"),
       color: "green",
       emoji: "🇨🇳",
     },
     {
       title: "Germany trip",
       date: new Date("2018-04-30"),
-      toDate: new Date("2018-05-09"),
+      to_date: new Date("2018-05-09"),
       color: "emerald",
       emoji: "🇩🇪",
     },
@@ -313,7 +283,7 @@ const data: Data = {
     {
       title: "Japan trip",
       date: new Date("2018-05-18"),
-      toDate: new Date("2018-05-25"),
+      to_date: new Date("2018-05-25"),
       color: "green",
       emoji: "🇯🇵",
     },
@@ -335,28 +305,28 @@ const data: Data = {
     {
       title: "Germany trip",
       date: new Date("2018-06-05"),
-      toDate: new Date("2018-06-12"),
+      to_date: new Date("2018-06-12"),
       color: "emerald",
       emoji: "🇩🇪",
     },
     {
       title: "First Germany trip with Mckenzie",
       date: new Date("2018-10-04"),
-      toDate: new Date("2018-10-28"),
+      to_date: new Date("2018-10-28"),
       color: "green",
       emoji: "🇩🇪",
     },
     {
       title: "Japan trip",
       date: new Date("2018-12-03"),
-      toDate: new Date("2018-12-06"),
+      to_date: new Date("2018-12-06"),
       color: "emerald",
       emoji: "🇯🇵",
     },
     {
       title: "Germany trip",
       date: new Date("2019-03-04"),
-      toDate: new Date("2019-03-15"),
+      to_date: new Date("2019-03-15"),
       color: "green",
       emoji: "🇩🇪",
     },
@@ -368,7 +338,7 @@ const data: Data = {
     {
       title: "Germany trip",
       date: new Date("2019-07-12"),
-      toDate: new Date("2019-07-19"),
+      to_date: new Date("2019-07-19"),
       color: "emerald",
       emoji: "🇩🇪",
     },
@@ -385,56 +355,56 @@ const data: Data = {
     {
       title: "Germany trip",
       date: new Date("2019-12-17"),
-      toDate: new Date("2020-01-02"),
+      to_date: new Date("2020-01-02"),
       color: "green",
       emoji: "🇩🇪",
     },
     {
       title: "Maledives for honeymoon 🍯",
       date: new Date("2020-01-02"),
-      toDate: new Date("2020-01-11"),
+      to_date: new Date("2020-01-11"),
       color: "emerald",
       emoji: "🇲🇻",
     },
     {
       title: "Singapore for honeymoon 🍯",
       date: new Date("2020-01-11"),
-      toDate: new Date("2020-01-15"),
+      to_date: new Date("2020-01-15"),
       color: "green",
       emoji: "🇸🇬",
     },
     {
       title: "Bali for honeymoon 🍯",
       date: new Date("2020-01-15"),
-      toDate: new Date("2020-01-30"),
+      to_date: new Date("2020-01-30"),
       color: "emerald",
       emoji: "🇮🇩",
     },
     {
       title: "Cruise",
       date: new Date("2020-03-09"),
-      toDate: new Date("2024-02-23"),
+      to_date: new Date("2024-02-23"),
       color: "orange",
       emoji: "🛳️",
     },
     {
       title: "Germany trip",
       date: new Date("2020-12-02"),
-      toDate: new Date("2020-12-15"),
+      to_date: new Date("2020-12-15"),
       color: "sky",
       emoji: "🇩🇪",
     },
     {
       title: "Mexico for the Konkel wedding",
       date: new Date("2021-08-07"),
-      toDate: new Date("2021-08-14"),
+      to_date: new Date("2021-08-14"),
       color: "blue",
       emoji: "🇲🇽",
     },
     {
       title: "Germany trip",
       date: new Date("2021-09-05"),
-      toDate: new Date("2021-09-16"),
+      to_date: new Date("2021-09-16"),
       color: "sky",
       emoji: "🇩🇪",
     },
@@ -456,14 +426,14 @@ const data: Data = {
     {
       title: "Canada for Kubecon in Detroit",
       date: new Date("2022-10-25"),
-      toDate: new Date("2022-10-28"),
+      to_date: new Date("2022-10-28"),
       color: "blue",
       emoji: "🇨🇦",
     },
     {
       title: "Mexico for the Yawili wedding",
       date: new Date("2023-02-14"),
-      toDate: new Date("2023-02-14"),
+      to_date: new Date("2023-02-14"),
       color: "sky",
       emoji: "🇲🇽",
     },
@@ -475,14 +445,14 @@ const data: Data = {
     {
       title: "Dominican Republic for the Marrow wedding",
       date: new Date("2023-11-30"),
-      toDate: new Date("2023-12-04"),
+      to_date: new Date("2023-12-04"),
       color: "blue",
       emoji: "🇩🇴",
     },
     {
       title: "Germany trip",
       date: new Date("2023-12-15"),
-      toDate: new Date("2024-01-08"),
+      to_date: new Date("2024-01-08"),
       color: "sky",
       emoji: "🇩🇪",
     },
@@ -499,10 +469,38 @@ const data: Data = {
   ],
 }
 
-export default function Chart() {
-  const age = new Date().getFullYear() - data.birthDate.getFullYear() - 1
+interface Props {
+  loading: boolean
+  user?: User
+  events: Event[]
+  upsertEvent: (event: Event) => void
+  deleteEvent?: (event: Event) => void
+}
+
+export default function Chart(props: Props) {
+  let data: Data
+
+  if (props.loading) {
+    data = {
+      birthDate: new Date(),
+      events: [],
+    }
+  } else if (!props.user) {
+    data = default_
+  } else {
+    data = {
+      birthDate: props.user.date_of_birth,
+      events: props.events,
+    }
+  }
+  const age = new Date().getFullYear() - data.birthDate.getFullYear()
+  const currentTarget = useRef<HTMLButtonElement | null>(null)
+
   return (
-    <div className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
+    <div
+      className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"
+      data-loading={props.loading}
+    >
       <div />
       <div className="flex flex-col">
         <div className="grid w-full grid-cols-[repeat(53,_minmax(0,_1fr))]">
@@ -521,7 +519,15 @@ export default function Chart() {
       </div>
       <div className="flex flex-col">
         {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
-          <Year key={index} year={index} data={data} />
+          <Year
+            key={index}
+            year={index}
+            data={data}
+            currentTarget={currentTarget}
+            user={props.user}
+            upsertEvent={props.upsertEvent}
+            deleteEvent={props.deleteEvent}
+          />
         ))}
       </div>
     </div>
