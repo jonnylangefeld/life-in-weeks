@@ -6,7 +6,7 @@ import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { cn } from "@/lib/utils"
+import { cn, parseDBEvent } from "@/lib/utils"
 import { Calendar } from "./ui/calendar"
 import { format } from "date-fns"
 import { CalendarDots, Confetti, Prohibit } from "@phosphor-icons/react"
@@ -15,7 +15,7 @@ import ColorItem from "./colorItem"
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import { toast } from "sonner"
 import { createClient } from "@/utils/supabase/client"
-import { Event } from "@/lib/database.types"
+import { Event, User } from "@/lib/database.types"
 import { Loader2 } from "lucide-react"
 
 const eventSchema = z.object({
@@ -47,6 +47,7 @@ const eventSchema = z.object({
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>
   upsertEvent: (event: Event) => void
+  deleteEvent?: (event: Event) => void
   event?: Event
 }
 
@@ -94,7 +95,7 @@ export default function UpsertEvent(props: Props) {
         user_id: user.id,
         ...values,
       } as Event
-      const { data, error: insertError } = await supabase.from("events").upsert(event)
+      const { data, error: insertError } = await supabase.from("events").upsert(event).select().single()
       if (insertError) {
         toast.error("Failed to create event: " + insertError.message)
         return
@@ -102,8 +103,28 @@ export default function UpsertEvent(props: Props) {
 
       toast.success(`${props.event ? "Updated" : "Created"} "${[event.emoji, event.title].join(" ")}"`)
 
-      // form.reset()
-      props.upsertEvent(event)
+      const e = parseDBEvent(data)
+      form.reset(e)
+      props.upsertEvent(e)
+      props.setOpen(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteEvent = async () => {
+    if (!props.event) {
+      return
+    }
+    setLoading(true)
+    try {
+      const { error } = await supabase.from("events").delete().eq("id", props.event.id)
+      if (error) {
+        toast.error("Failed to delete event: " + error.message)
+        return
+      }
+      toast.success(`Deleted "${[props.event.emoji, props.event.title].join(" ")}"`)
+      props.deleteEvent!(props.event)
       props.setOpen(false)
     } finally {
       setLoading(false)
@@ -316,6 +337,11 @@ export default function UpsertEvent(props: Props) {
             />
           </div>
           <DialogFooter>
+            {props.event && (
+              <Button type="reset" variant="destructive" disabled={loading} onClick={deleteEvent}>
+                Delete
+              </Button>
+            )}
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? "Loading..." : props.event ? "Save" : "Create"}

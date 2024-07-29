@@ -10,6 +10,7 @@ interface Props {
   currentTarget: MutableRefObject<HTMLButtonElement | null>
   user?: User
   upsertEvent: (event: Event) => void
+  deleteEvent?: (event: Event) => void
 }
 
 export default function Year(props: Props) {
@@ -25,6 +26,7 @@ export default function Year(props: Props) {
           currentTarget={props.currentTarget}
           user={props.user}
           upsertEvent={props.upsertEvent}
+          deleteEvent={props.deleteEvent}
         />
       ))}
     </div>

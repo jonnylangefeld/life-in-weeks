@@ -9,6 +9,7 @@ import { AuthSessionMissingError } from "@supabase/supabase-js"
 import { createClient } from "@/utils/supabase/client"
 import { Event } from "@/lib/database.types"
 import { toast } from "sonner"
+import { parseDBEvent } from "@/lib/utils"
 
 export default function Home() {
   const supabase = createClient()
@@ -57,9 +58,8 @@ export default function Home() {
         setEventMap(
           new Map<string, Event>(
             user?.events.map((e) => {
-              e.date = new Date(e.date)
-              e.to_date = e.to_date ? new Date(e.to_date) : undefined
-              return [e.id, e]
+              const event = parseDBEvent(e)
+              return [event.id!, event]
             }) || []
           )
         )
@@ -75,13 +75,27 @@ export default function Home() {
     setEventMap((prevMap) => new Map(prevMap).set(event.id!, event))
   }
 
+  const deleteEvent = (event: Event) => {
+    setEventMap((prevMap) => {
+      const newMap = new Map(prevMap)
+      newMap.delete(event.id!)
+      return newMap
+    })
+  }
+
   return (
     <>
       <div className="flex flex-row items-center justify-between gap-1">
         <H1 className="whitespace-nowrap">My Life in Weeks</H1>
         <Create loading={loading} user={user} upsertEvent={upsertEvent} setUser={setUser} />
       </div>
-      <Chart user={user} loading={loading} events={Array.from(eventMap.values())} upsertEvent={upsertEvent} />
+      <Chart
+        user={user}
+        loading={loading}
+        events={Array.from(eventMap.values())}
+        upsertEvent={upsertEvent}
+        deleteEvent={deleteEvent}
+      />
     </>
   )
 }

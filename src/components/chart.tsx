@@ -475,6 +475,7 @@ interface Props {
   user?: User
   events: Event[]
   upsertEvent: (event: Event) => void
+  deleteEvent?: (event: Event) => void
 }
 
 export default function Chart(props: Props) {
@@ -526,6 +527,7 @@ export default function Chart(props: Props) {
             currentTarget={currentTarget}
             user={props.user}
             upsertEvent={props.upsertEvent}
+            deleteEvent={props.deleteEvent}
           />
         ))}
       </div>

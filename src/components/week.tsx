@@ -13,6 +13,7 @@ interface Props {
   currentTarget: MutableRefObject<HTMLButtonElement | null>
   user?: User
   upsertEvent: (event: Event) => void
+  deleteEvent?: (event: Event) => void
 }
 
 function dateInRange(date: Date, from: Date, to: Date): boolean {
@@ -35,7 +36,12 @@ const EditDialog: React.FC<Props & { event: Event }> = (props) => {
           <Pencil className="m-2" size={20} />
         </div>
       </DialogTrigger>
-      <UpsertEvent event={props.event} setOpen={setOpen} upsertEvent={props.upsertEvent} />
+      <UpsertEvent
+        event={props.event}
+        setOpen={setOpen}
+        upsertEvent={props.upsertEvent}
+        deleteEvent={props.deleteEvent}
+      />
     </Dialog>
   )
 }
