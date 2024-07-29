@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
-import { Event } from "@/lib/database.types"
 import { twMerge } from "tailwind-merge"
+import { Event } from "@/lib/database.types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
