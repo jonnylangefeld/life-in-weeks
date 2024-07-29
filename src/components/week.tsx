@@ -1,4 +1,5 @@
 import { Pencil } from "@phosphor-icons/react"
+import { set } from "date-fns"
 import { MutableRefObject, useState } from "react"
 import { Event, User } from "@/lib/database.types"
 import { Data } from "./chart"
@@ -32,8 +33,8 @@ const EditDialog: React.FC<Props & { event: Event }> = (props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <div className="flex cursor-pointer flex-col justify-center">
-          <Pencil className="m-2" size={20} />
+        <div className="flex h-full cursor-pointer flex-col justify-center text-muted-foreground hover:text-foreground">
+          <Pencil size={20} />
         </div>
       </DialogTrigger>
       <UpsertEvent
@@ -109,8 +110,15 @@ export default function Week(props: Props) {
     return undefined
   }
 
+  const onOpenChange = (open: boolean) => {
+    setOpen(open)
+    if (!open) {
+      props.currentTarget.current = null
+    }
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
         className="group relative aspect-square w-16 min-w-[2px] sm:m-px"
         onMouseEnter={() => {
@@ -152,12 +160,6 @@ export default function Week(props: Props) {
         className="text-sm shadow-lg"
         onWheel={(e) => {
           e.stopPropagation()
-        }}
-        onPointerDownOutside={() => {
-          props.currentTarget.current = null
-        }}
-        onEscapeKeyDown={() => {
-          props.currentTarget.current = null
         }}
       >
         <div className={events.length != 0 ? "text-muted-foreground" : ""}>
