@@ -474,6 +474,7 @@ interface Props {
   loading: boolean
   user?: User
   events: Event[]
+  upsertEvent: (event: Event) => void
 }
 
 export default function Chart(props: Props) {
@@ -518,7 +519,14 @@ export default function Chart(props: Props) {
       </div>
       <div className="flex flex-col">
         {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
-          <Year key={index} year={index} data={data} currentTarget={currentTarget} user={props.user} />
+          <Year
+            key={index}
+            year={index}
+            data={data}
+            currentTarget={currentTarget}
+            user={props.user}
+            upsertEvent={props.upsertEvent}
+          />
         ))}
       </div>
     </div>

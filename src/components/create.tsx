@@ -10,7 +10,7 @@ import { Event } from "@/lib/database.types"
 interface Props {
   loading: boolean
   user?: Database["public"]["Tables"]["users"]["Row"]
-  addEvent: (event: Event) => void
+  upsertEvent: (event: Event) => void
   setUser: Dispatch<SetStateAction<User | undefined>>
 }
 
@@ -26,7 +26,7 @@ export default function Create(props: Props) {
         </Button>
       </DialogTrigger>
       {props.user ? (
-        <UpsertEvent setOpen={setOpen} addEvent={props.addEvent} />
+        <UpsertEvent setOpen={setOpen} upsertEvent={props.upsertEvent} />
       ) : (
         <CreateUser setOpen={setOpen} setUser={props.setUser} />
       )}

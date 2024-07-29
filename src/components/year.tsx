@@ -2,13 +2,14 @@ import { Dispatch, MutableRefObject, SetStateAction } from "react"
 import { Data } from "./chart"
 import Tick from "./tick"
 import Week from "./week"
-import { User } from "@/lib/database.types"
+import { Event, User } from "@/lib/database.types"
 
 interface Props {
   year: number
   data: Data
   currentTarget: MutableRefObject<HTMLButtonElement | null>
   user?: User
+  upsertEvent: (event: Event) => void
 }
 
 export default function Year(props: Props) {
@@ -23,6 +24,7 @@ export default function Year(props: Props) {
           data={props.data}
           currentTarget={props.currentTarget}
           user={props.user}
+          upsertEvent={props.upsertEvent}
         />
       ))}
     </div>

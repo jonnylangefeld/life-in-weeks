@@ -14,7 +14,7 @@ export default function Home() {
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<User | undefined>(undefined)
-  const [events, setEvents] = useState<Event[]>([])
+  const [eventMap, setEventMap] = useState(new Map<string, Event>())
 
   useEffect(() => {
     const getUser = async () => {
@@ -54,16 +54,14 @@ export default function Home() {
           id: user?.id,
           date_of_birth: new Date(user?.date_of_birth),
         })
-        setEvents(
-          user?.events.map((e) => {
-            return {
-              title: e.title,
-              emoji: e.emoji,
-              color: e.color,
-              date: new Date(e.date),
-              to_date: e.to_date ? new Date(e.to_date) : undefined,
-            } as Event
-          }) || []
+        setEventMap(
+          new Map<string, Event>(
+            user?.events.map((e) => {
+              e.date = new Date(e.date)
+              e.to_date = e.to_date ? new Date(e.to_date) : undefined
+              return [e.id, e]
+            }) || []
+          )
         )
       } finally {
         setLoading(false)
@@ -73,17 +71,17 @@ export default function Home() {
     getUser()
   }, [supabase])
 
-  const addEvent = (event: Event) => {
-    setEvents([...events, event])
+  const upsertEvent = (event: Event) => {
+    setEventMap((prevMap) => new Map(prevMap).set(event.id!, event))
   }
 
   return (
     <>
       <div className="flex flex-row items-center justify-between gap-1">
         <H1 className="whitespace-nowrap">My Life in Weeks</H1>
-        <Create loading={loading} user={user} addEvent={addEvent} setUser={setUser} />
+        <Create loading={loading} user={user} upsertEvent={upsertEvent} setUser={setUser} />
       </div>
-      <Chart user={user} loading={loading} events={events} />
+      <Chart user={user} loading={loading} events={Array.from(eventMap.values())} upsertEvent={upsertEvent} />
     </>
   )
 }

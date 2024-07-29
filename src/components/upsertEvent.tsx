@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { useForm } from "react-hook-form"
@@ -46,7 +46,7 @@ const eventSchema = z.object({
 
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>
-  addEvent: (event: Event) => void
+  upsertEvent: (event: Event) => void
   event?: Event
 }
 
@@ -94,16 +94,16 @@ export default function UpsertEvent(props: Props) {
         user_id: user.id,
         ...values,
       } as Event
-      const { error: insertError } = await supabase.from("events").insert(event)
+      const { data, error: insertError } = await supabase.from("events").upsert(event)
       if (insertError) {
         toast.error("Failed to create event: " + insertError.message)
         return
       }
 
-      toast.success(`Created "${[event.emoji, event.title].join(" ")}"`)
+      toast.success(`${props.event ? "Updated" : "Created"} "${[event.emoji, event.title].join(" ")}"`)
 
-      form.reset()
-      props.addEvent(event)
+      // form.reset()
+      props.upsertEvent(event)
       props.setOpen(false)
     } finally {
       setLoading(false)

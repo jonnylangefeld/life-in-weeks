@@ -12,6 +12,7 @@ interface Props {
   data: Data
   currentTarget: MutableRefObject<HTMLButtonElement | null>
   user?: User
+  upsertEvent: (event: Event) => void
 }
 
 function dateInRange(date: Date, from: Date, to: Date): boolean {
@@ -25,8 +26,23 @@ function dateRangeOverlap(from1: Date, to1: Date, from2: Date, to2: Date): boole
   )
 }
 
-export default function Week(props: Props) {
+const EditDialog: React.FC<Props & { event: Event }> = (props) => {
   const [open, setOpen] = useState(false)
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>
+        <div className="flex cursor-pointer flex-col justify-center">
+          <Pencil className="m-2" size={20} />
+        </div>
+      </DialogTrigger>
+      <UpsertEvent event={props.event} setOpen={setOpen} upsertEvent={props.upsertEvent} />
+    </Dialog>
+  )
+}
+
+export default function Week(props: Props) {
+  const [popoverOpen, setPopoverOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -42,7 +58,7 @@ export default function Week(props: Props) {
     return endOfWeek.getTime() < today.getTime()
   }
 
-  const getEvents = (): Event[] => {
+  const filterEvents = (): Event[] => {
     const events: Event[] = []
     props.data.events.forEach((event) => {
       if (
@@ -58,7 +74,7 @@ export default function Week(props: Props) {
     return events
   }
 
-  const events = getEvents()
+  const events = filterEvents()
   const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
 
   const tileContent = (): JSX.Element | undefined => {
@@ -89,17 +105,17 @@ export default function Week(props: Props) {
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger
         className="group relative aspect-square w-16 min-w-[2px] sm:m-[1px]"
         onMouseEnter={() => {
           if (!props.currentTarget.current) {
-            setOpen(true)
+            setPopoverOpen(true)
           }
         }}
         onMouseLeave={() => {
           if (!props.currentTarget.current) {
-            setOpen(false)
+            setPopoverOpen(false)
           }
         }}
         onDoubleClick={() => console.log("double click")}
@@ -107,7 +123,7 @@ export default function Week(props: Props) {
         onTouchEnd={() => console.log("touch end")}
         onClick={(e) => {
           e.preventDefault()
-          setOpen(true)
+          setPopoverOpen(true)
           props.currentTarget.current = e.currentTarget
         }}
       >
@@ -160,24 +176,7 @@ export default function Week(props: Props) {
                   {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
                 </p>
               </div>
-              {props.user && (
-                <Dialog>
-                  <DialogTrigger>
-                    <div className="flex cursor-pointer flex-col justify-center">
-                      <Pencil className="m-2" size={20} />
-                    </div>
-                  </DialogTrigger>
-                  <UpsertEvent
-                    event={event}
-                    setOpen={function (value: SetStateAction<boolean>): void {
-                      throw new Error("Function not implemented.")
-                    }}
-                    addEvent={function (event: Event): void {
-                      throw new Error("Function not implemented.")
-                    }}
-                  />
-                </Dialog>
-              )}
+              {props.user && <EditDialog {...props} event={event} />}
             </div>
           )
         })}

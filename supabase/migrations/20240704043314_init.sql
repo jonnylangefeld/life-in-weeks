@@ -55,11 +55,5 @@ CREATE TABLE
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow logged-in read access for events" ON events for
-SELECT
+ALL
   USING (auth.uid () = user_id);
-
-CREATE POLICY "Allow logged-in write access for events" ON events for INSERT
-WITH
-  CHECK (auth.uid () = user_id);
-
-CREATE POLICY "Allow logged-in delete access for events" ON events for DELETE USING (auth.uid () = user_id);
