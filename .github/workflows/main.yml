@@ -27,6 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
+        with:
+          version: 1.187.8
       - name: Start Supabase local development setup
         run: supabase start
       - name: Lint database
@@ -58,6 +60,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
+        with:
+          version: 1.178.2
       - name: Link Supabase --project-ref
         if: success()
         run: supabase link --project-ref $SUPABASE_PROJECT_ID
