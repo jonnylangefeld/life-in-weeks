@@ -1,0 +1,12 @@
+# a cron job that runs every 24 hours to keep the workflow alive
+name: Keep Supabase Project Alive
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-22.04
+    steps:
+      - run: curl -s https://life-in-weeks-xi.vercel.app/keep-alive
