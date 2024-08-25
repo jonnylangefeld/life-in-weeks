@@ -1,6 +1,6 @@
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { Loader2 } from "lucide-react"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { Database, User } from "@/lib/database.types"
 import { Event } from "@/lib/database.types"
 import CreateUser from "./createUser"
@@ -11,6 +11,7 @@ import UpsertEvent from "./upsertEvent"
 interface Props {
   loading: boolean
   user?: Database["public"]["Tables"]["users"]["Row"]
+  authUser?: SupabaseUser
   upsertEvent: (event: Event) => void
   setUser: Dispatch<SetStateAction<User | undefined>>
   setAuthUser: Dispatch<SetStateAction<SupabaseUser | undefined>>
@@ -18,6 +19,10 @@ interface Props {
 
 export default function Create(props: Props) {
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    setOpen((props.authUser && !props.user) || false)
+  }, [props.authUser, props.user])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -30,7 +35,12 @@ export default function Create(props: Props) {
       {props.user ? (
         <UpsertEvent setOpen={setOpen} upsertEvent={props.upsertEvent} />
       ) : (
-        <CreateUser setOpen={setOpen} setUser={props.setUser} setAuthUser={props.setAuthUser} />
+        <CreateUser
+          setOpen={setOpen}
+          setUser={props.setUser}
+          setAuthUser={props.setAuthUser}
+          authUser={props.authUser}
+        />
       )}
     </Dialog>
   )

@@ -1,5 +1,6 @@
 import { UserCircle } from "@phosphor-icons/react"
 import { User as SupabaseUser } from "@supabase/supabase-js"
+import Image from "next/image"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Database } from "@/lib/database.types"
@@ -28,16 +29,35 @@ export default function Account(props: Props) {
   const signIn = async () => {
     const { error } = await supabase.auth.signInWithOAuth({ provider: "google" })
     if (error) {
-      toast.error("Error creating account:" + error.message)
+      toast.error("Error signing in:" + error.message)
       return
     }
+  }
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      toast.error("Error signing out:" + error.message)
+      return
+    }
+    window.location.reload()
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button disabled={props.loading} variant={"secondary"}>
-          <UserCircle size={32} />
+          {props.authUser?.user_metadata["picture"] ? (
+            <Image
+              alt=""
+              src={props.authUser.user_metadata["picture"]}
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+          ) : (
+            <UserCircle size={32} />
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -52,6 +72,11 @@ export default function Account(props: Props) {
         {props.user && <p>Your birth date: {new Date(props.user.date_of_birth).toLocaleDateString()}</p>}
         {props.authUser?.is_anonymous && <Button onClick={linkIdentity}>Sign in with Google</Button>}
         {!props.user && <Button onClick={signIn}>Sign in with Google</Button>}
+        {props.authUser && !props.authUser.is_anonymous && (
+          <Button variant={"destructive"} onClick={signOut}>
+            Sign out
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   )

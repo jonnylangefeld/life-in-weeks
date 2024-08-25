@@ -10,6 +10,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>
+  authUser?: SupabaseUser
   setUser: Dispatch<SetStateAction<User | undefined>>
   setAuthUser: Dispatch<SetStateAction<SupabaseUser | undefined>>
 }
@@ -23,25 +24,28 @@ export default function CreateUser(props: Props) {
   const createUser = async () => {
     setLoading(true)
     try {
-      const {
-        data: { user: authUser },
-        error: authError,
-      } = await supabase.auth.signInAnonymously()
+      let authUserID = props.authUser?.id
+      if (!props.authUser) {
+        const {
+          data: { user: authUser },
+          error: authError,
+        } = await supabase.auth.signInAnonymously()
 
-      if (authError) {
-        toast.error("Authentication error:" + authError.message)
-        return
+        if (authError) {
+          toast.error("Authentication error:" + authError.message)
+          return
+        }
+
+        if (!authUser) {
+          toast.error("Authentication error: User not found")
+          return
+        }
+        props.setAuthUser(authUser)
+        authUserID = authUser.id
       }
-
-      if (!authUser) {
-        toast.error("Authentication error: User not found")
-        return
-      }
-
-      props.setAuthUser(authUser)
 
       const user: User = {
-        id: authUser.id!,
+        id: authUserID!,
         date_of_birth: date!,
       }
 
