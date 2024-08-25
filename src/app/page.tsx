@@ -1,7 +1,9 @@
 "use client"
 
+import { User as SupabaseUser } from "@supabase/supabase-js"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import Account from "@/components/account"
 import Chart from "@/components/chart"
 import Create from "@/components/create"
 import H1 from "@/components/ui/h1"
@@ -12,6 +14,7 @@ import { createClient } from "@/utils/supabase/client"
 export default function Home() {
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
+  const [authUser, setAuthUser] = useState<SupabaseUser | undefined>(undefined)
   const [user, setUser] = useState<User | undefined>(undefined)
   const [eventMap, setEventMap] = useState(new Map<string, Event>())
 
@@ -32,6 +35,8 @@ export default function Home() {
         if (!authUser) {
           return
         }
+
+        setAuthUser(authUser)
 
         const { data: user, error } = await supabase
           .from("users")
@@ -85,7 +90,10 @@ export default function Home() {
     <>
       <div className="flex flex-row items-center justify-between gap-1">
         <H1 className="whitespace-nowrap">My Life in Weeks</H1>
-        <Create loading={loading} user={user} upsertEvent={upsertEvent} setUser={setUser} />
+        <div className="flex flex-row gap-1">
+          <Account loading={loading} user={user} authUser={authUser} />
+          <Create loading={loading} user={user} upsertEvent={upsertEvent} setUser={setUser} setAuthUser={setAuthUser} />
+        </div>
       </div>
       <Chart
         user={user}

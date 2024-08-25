@@ -1,3 +1,4 @@
+import { User as SupabaseUser } from "@supabase/supabase-js"
 import { Loader2 } from "lucide-react"
 import { Dispatch, SetStateAction, useState } from "react"
 import { toast } from "sonner"
@@ -10,6 +11,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>
   setUser: Dispatch<SetStateAction<User | undefined>>
+  setAuthUser: Dispatch<SetStateAction<SupabaseUser | undefined>>
 }
 
 export default function CreateUser(props: Props) {
@@ -35,6 +37,8 @@ export default function CreateUser(props: Props) {
         toast.error("Authentication error: User not found")
         return
       }
+
+      props.setAuthUser(authUser)
 
       const user: User = {
         id: authUser.id!,

@@ -1,3 +1,4 @@
+import { User as SupabaseUser } from "@supabase/supabase-js"
 import { Loader2 } from "lucide-react"
 import { Dispatch, SetStateAction, useState } from "react"
 import { Database, User } from "@/lib/database.types"
@@ -12,6 +13,7 @@ interface Props {
   user?: Database["public"]["Tables"]["users"]["Row"]
   upsertEvent: (event: Event) => void
   setUser: Dispatch<SetStateAction<User | undefined>>
+  setAuthUser: Dispatch<SetStateAction<SupabaseUser | undefined>>
 }
 
 export default function Create(props: Props) {
@@ -28,7 +30,7 @@ export default function Create(props: Props) {
       {props.user ? (
         <UpsertEvent setOpen={setOpen} upsertEvent={props.upsertEvent} />
       ) : (
-        <CreateUser setOpen={setOpen} setUser={props.setUser} />
+        <CreateUser setOpen={setOpen} setUser={props.setUser} setAuthUser={props.setAuthUser} />
       )}
     </Dialog>
   )
