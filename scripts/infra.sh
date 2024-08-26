@@ -11,3 +11,4 @@ gcloud config set project life-in-weeks-prod
 # * select 'OAuth client ID'
 # * select 'Web application'
 # configure supabase providers: https://supabase.com/dashboard/project/mbauxwpjmmlvbojestpa/auth/providers
+# configure redirect urls: https://supabase.com/dashboard/project/mbauxwpjmmlvbojestpa/auth/url-configuration

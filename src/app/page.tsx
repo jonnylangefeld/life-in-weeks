@@ -9,7 +9,7 @@ import Chart from "@/components/chart"
 import Create from "@/components/create"
 import H1 from "@/components/ui/h1"
 import { Event, User } from "@/lib/database.types"
-import { parseDBEvent } from "@/lib/utils"
+import { getRedirectURL, parseDBEvent } from "@/lib/utils"
 import { createClient } from "@/utils/supabase/client"
 
 export default function Home() {
@@ -39,7 +39,10 @@ export default function Home() {
       // Maybe this issue reveals a solution one day: https://github.com/supabase/auth/issues/1525#issuecomment-2309017426s
       toast.info("The Account you logged in with already exists. Logging you in...")
       const signIn = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({ provider: "google" })
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo: getRedirectURL() },
+        })
         if (error) {
           toast.error("Error signing in:" + error.message)
           return

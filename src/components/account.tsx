@@ -4,6 +4,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Database } from "@/lib/database.types"
+import { getRedirectURL } from "@/lib/utils"
 import { createClient } from "@/utils/supabase/client"
 import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
@@ -19,7 +20,10 @@ export default function Account(props: Props) {
   const [open, setOpen] = useState(false)
 
   const linkIdentity = async () => {
-    const { error } = await supabase.auth.linkIdentity({ provider: "google" })
+    const { error } = await supabase.auth.linkIdentity({
+      provider: "google",
+      options: { redirectTo: getRedirectURL() },
+    })
     if (error) {
       toast.error("Error signing in:" + error.message)
       return
@@ -27,7 +31,10 @@ export default function Account(props: Props) {
   }
 
   const signIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider: "google" })
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: getRedirectURL() },
+    })
     if (error) {
       toast.error("Error signing in:" + error.message)
       return
