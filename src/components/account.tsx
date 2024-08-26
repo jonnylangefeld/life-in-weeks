@@ -54,7 +54,7 @@ export default function Account(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={props.loading} variant={"secondary"}>
+        <Button disabled={props.loading} variant={"secondary"} className="px-2 sm:px-4">
           {props.authUser?.user_metadata["picture"] ? (
             <Image
               alt=""
@@ -81,17 +81,13 @@ export default function Account(props: Props) {
         {props.authUser?.is_anonymous && (
           <Button className="flex flex-row gap-1" onClick={linkIdentity}>
             <span>Sign in with</span>
-            <span className="h-full">
-              <FcGoogle className="h-full" size={"100%"} />
-            </span>
+            <FcGoogle className="size-6" size={"100%"} />
           </Button>
         )}
         {!props.authUser && (
           <Button className="flex flex-row gap-1" onClick={signIn}>
             <span>Sign in with</span>
-            <span className="h-full">
-              <FcGoogle className="h-full" size={"100%"} />
-            </span>
+            <FcGoogle className="size-6" size={"100%"} />
           </Button>
         )}
         {props.authUser && !props.authUser.is_anonymous && (

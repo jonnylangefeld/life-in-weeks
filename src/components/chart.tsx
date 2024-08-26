@@ -1,7 +1,5 @@
-import { useRef } from "react"
 import { Event, User } from "@/lib/database.types"
-import Tick from "./tick"
-import Year from "./year"
+import Grid from "./grid"
 
 export interface Data {
   birthDate: Date
@@ -493,42 +491,17 @@ export default function Chart(props: Props) {
       events: props.events,
     }
   }
-  const age = new Date().getFullYear() - data.birthDate.getFullYear()
-  const currentTarget = useRef<HTMLButtonElement | null>(null)
 
   return (
     <div
-      className="grid h-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"
+      className="grid size-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"
       data-loading={props.loading}
     >
       <div />
-      <div className="flex flex-col">
-        <div className="grid w-full grid-cols-[repeat(53,_minmax(0,_1fr))]">
-          <div className="col-span-full col-start-2">
-            <div className="ml-1 leading-none">Weeks →</div>
-          </div>
-        </div>
-        <div className="flex flex-grow flex-row contain-inline-size">
-          {Array.from({ length: 53 }).map((_, index) => (
-            <Tick key={index} t={index} minIndex={1} />
-          ))}
-        </div>
-      </div>
-      <div className="flex flex-row">
-        <div className="mt-1 leading-none [writing-mode:vertical-lr]">Age →</div>
-      </div>
-      <div className="flex flex-col">
-        {Array.from({ length: Math.max(79, age + 20) }).map((_, index) => (
-          <Year
-            key={index}
-            year={index}
-            data={data}
-            currentTarget={currentTarget}
-            user={props.user}
-            upsertEvent={props.upsertEvent}
-            deleteEvent={props.deleteEvent}
-          />
-        ))}
+      <div className="ml-2 text-xs leading-none sm:text-sm md:text-base">Weeks →</div>
+      <div className="mt-2 text-xs leading-none [writing-mode:vertical-lr] sm:text-sm md:text-base">Age →</div>
+      <div className="size-full overflow-auto">
+        <Grid data={data} upsertEvent={props.upsertEvent} deleteEvent={props.deleteEvent} user={props.user} />
       </div>
     </div>
   )

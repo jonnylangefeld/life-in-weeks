@@ -1,9 +1,9 @@
-import { PiCalendarDots, PiConfetti, PiProhibit } from "react-icons/pi"
 import { format } from "date-fns"
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import { Loader2 } from "lucide-react"
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
+import { PiCalendarDots, PiConfetti, PiProhibit } from "react-icons/pi"
 import { toast } from "sonner"
 import { z } from "zod"
 import { Event } from "@/lib/database.types"
@@ -188,12 +188,16 @@ export default function UpsertEvent(props: Props) {
                         openEmojiPopover(true)
                       }}
                     >
-                      {field.value ? field.value : <PiConfetti className="h-full py-2 text-muted-foreground" size={32} />}
+                      {field.value ? (
+                        field.value
+                      ) : (
+                        <PiConfetti className="h-full py-2 text-muted-foreground" size={32} />
+                      )}
                     </Button>
                     <div
                       ref={emojiPopoverContainerRef}
                       className={cn(
-                        "absolute bottom-0 left-[50%] w-auto min-w-min -translate-x-1/2 translate-y-full transform",
+                        "absolute bottom-0 w-auto min-w-min translate-y-full transform",
                         !emojiPopoverOpen && "hidden"
                       )}
                     >
