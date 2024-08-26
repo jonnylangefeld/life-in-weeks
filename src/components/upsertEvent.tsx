@@ -197,7 +197,7 @@ export default function UpsertEvent(props: Props) {
                     <div
                       ref={emojiPopoverContainerRef}
                       className={cn(
-                        "absolute bottom-0 left-[50%] w-auto min-w-min -translate-x-1/2 translate-y-full transform",
+                        "absolute bottom-0 w-auto min-w-min translate-y-full transform",
                         !emojiPopoverOpen && "hidden"
                       )}
                     >

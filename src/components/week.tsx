@@ -119,7 +119,7 @@ export default function Week(props: Props) {
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
-        className="group relative size-full"
+        className="group relative size-full focus-visible:outline-none"
         onMouseEnter={() => {
           if (!props.currentTarget.current) {
             setOpen(true)

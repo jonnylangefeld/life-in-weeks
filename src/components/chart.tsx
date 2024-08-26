@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from "react"
 import { Event, User } from "@/lib/database.types"
-import Tick from "./tick"
-import Week from "./week"
+import Grid from "./grid"
 
 export interface Data {
   birthDate: Date
@@ -493,84 +491,17 @@ export default function Chart(props: Props) {
       events: props.events,
     }
   }
-  const age = new Date().getFullYear() - data.birthDate.getFullYear()
-  const currentTarget = useRef<HTMLButtonElement | null>(null)
-
-  const [cellSize, setCellSize] = useState(50)
-  const gridRef = useRef<HTMLDivElement>(null)
-  const minCellWidth = 15
-  const rows = Math.max(79, age + 20) + 1
-  const cols = 52 + 1
-
-  useEffect(() => {
-    const currentContainerRef = gridRef.current
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target === currentContainerRef) {
-          const containerWidth = entry.contentRect.width
-          const newCellSize = (containerWidth - (cols - 1)) / cols // (cols-1) for the gap
-          setCellSize(newCellSize)
-        }
-      }
-    })
-
-    if (currentContainerRef) {
-      resizeObserver.observe(currentContainerRef)
-    }
-
-    return () => {
-      if (currentContainerRef) {
-        resizeObserver.unobserve(currentContainerRef)
-      }
-    }
-  }, [cols])
 
   return (
     <div
       className="grid size-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"
       data-loading={props.loading}
     >
-      {/* (cols-1) for the gap */}
       <div />
       <div className="ml-2 text-xs leading-none sm:text-sm md:text-base">Weeks →</div>
       <div className="mt-2 text-xs leading-none [writing-mode:vertical-lr] sm:text-sm md:text-base">Age →</div>
       <div className="size-full overflow-auto">
-        <div
-          ref={gridRef}
-          className="grid gap-px"
-          style={{
-            gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
-            gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
-            height: `${cellSize * rows + (rows - 1)}px`, // (rows-1) for the gap
-            minWidth: minCellWidth * cols + (cols - 1), // (cols-1) for the gap
-          }}
-        >
-          {Array.from({ length: rows }).map((_, y) =>
-            Array.from({ length: cols }).map((_, x) => {
-              if (y == 0 && x == 0) {
-                return <div key={`${x}=${y}`} className="sticky left-0 top-0 z-50 bg-muted" />
-              }
-              if (y == 0 && x != 0) {
-                return <Tick key={`${x}=${y}`} t={x} />
-              }
-              if (x == 0 && y != 0) {
-                return <Tick key={`${x}=${y}`} t={y - 1} vertical />
-              }
-              return (
-                <Week
-                  key={`${x}=${y}`}
-                  year={y - 1}
-                  week={x}
-                  data={data}
-                  currentTarget={currentTarget}
-                  user={props.user}
-                  upsertEvent={props.upsertEvent}
-                  deleteEvent={props.deleteEvent}
-                />
-              )
-            })
-          )}
-        </div>
+        <Grid data={data} upsertEvent={props.upsertEvent} deleteEvent={props.deleteEvent} user={props.user} />
       </div>
     </div>
   )
