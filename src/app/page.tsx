@@ -125,7 +125,9 @@ export default function Home() {
   return (
     <>
       <div className="flex flex-row items-center justify-between gap-1">
-        <H1 className="whitespace-nowrap">My Life in Weeks</H1>
+        <H1 className="whitespace-nowrap">
+          {authUser?.user_metadata["name"] ? authUser?.user_metadata["name"]?.split(" ")[0] + "'s" : "My"} Life in Weeks
+        </H1>
         <div className="flex flex-row gap-1">
           <Account loading={loading} user={user} authUser={authUser} />
           <Create
