@@ -1,4 +1,4 @@
-import { CalendarDots, Confetti, Prohibit } from "@phosphor-icons/react"
+import { PiCalendarDots, PiConfetti, PiProhibit } from "react-icons/pi"
 import { format } from "date-fns"
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import { Loader2 } from "lucide-react"
@@ -188,7 +188,7 @@ export default function UpsertEvent(props: Props) {
                         openEmojiPopover(true)
                       }}
                     >
-                      {field.value ? field.value : <Confetti className="h-full py-2 text-muted-foreground" size={32} />}
+                      {field.value ? field.value : <PiConfetti className="h-full py-2 text-muted-foreground" size={32} />}
                     </Button>
                     <div
                       ref={emojiPopoverContainerRef}
@@ -259,7 +259,7 @@ export default function UpsertEvent(props: Props) {
                         }}
                       >
                         <span className={`flex size-5 items-center justify-center rounded-full`}>
-                          <Prohibit size={32} />
+                          <PiProhibit size={32} />
                         </span>
                         No color
                       </button>
@@ -285,7 +285,7 @@ export default function UpsertEvent(props: Props) {
                           variant={"outline"}
                           className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
                         >
-                          <CalendarDots className="h-full" size={32} />
+                          <PiCalendarDots className="h-full" size={32} />
                           {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                         </Button>
                       </FormControl>
@@ -321,7 +321,7 @@ export default function UpsertEvent(props: Props) {
                           variant={"outline"}
                           className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
                         >
-                          <CalendarDots className="h-full" size={32} />
+                          <PiCalendarDots className="h-full" size={32} />
                           {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                         </Button>
                       </FormControl>

@@ -1,4 +1,4 @@
-import { Check } from "@phosphor-icons/react"
+import { PiCheck } from "react-icons/pi"
 import { Color } from "@/lib/types"
 
 interface Props extends React.HTMLProps<HTMLButtonElement> {
@@ -15,7 +15,7 @@ export default function ColorItem({ color, active, onClick }: Props) {
       <span
         className={`bg- flex size-5 items-center justify-center rounded-full ${color.toLowerCase()}-200 dark:bg-${color.toLowerCase()}-300`}
       >
-        {active && <Check size={32} className="h-5/6 dark:invert" />}
+        {active && <PiCheck size={32} className="h-5/6 dark:invert" />}
       </span>
       {color}
     </button>

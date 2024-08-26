@@ -1,5 +1,5 @@
-import { PencilSimple } from "@phosphor-icons/react"
 import { MutableRefObject, useState } from "react"
+import { PiPencilSimple } from "react-icons/pi"
 import { Event, User } from "@/lib/database.types"
 import { Data } from "./chart"
 import { Dialog, DialogTrigger } from "./ui/dialog"
@@ -33,7 +33,7 @@ const EditDialog: React.FC<Props & { event: Event }> = (props) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <div className="flex h-full cursor-pointer flex-col justify-center text-muted-foreground hover:text-foreground">
-          <PencilSimple size={20} />
+          <PiPencilSimple size={20} />
         </div>
       </DialogTrigger>
       <UpsertEvent
