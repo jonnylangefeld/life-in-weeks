@@ -78,7 +78,7 @@ export default function Account(props: Props) {
         </DialogHeader>
         {props.user && <p>Your birth date: {new Date(props.user.date_of_birth).toLocaleDateString()}</p>}
         {props.authUser?.is_anonymous && <Button onClick={linkIdentity}>Sign in with Google</Button>}
-        {!props.user && <Button onClick={signIn}>Sign in with Google</Button>}
+        {!props.authUser && <Button onClick={signIn}>Sign in with Google</Button>}
         {props.authUser && !props.authUser.is_anonymous && (
           <Button variant={"destructive"} onClick={signOut}>
             Sign out
