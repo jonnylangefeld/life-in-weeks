@@ -523,7 +523,7 @@ export default function Chart(props: Props) {
         resizeObserver.unobserve(currentContainerRef)
       }
     }
-  }, [])
+  }, [cols])
 
   return (
     <div
