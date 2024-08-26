@@ -1,7 +1,8 @@
-import { UserCircle } from "@phosphor-icons/react"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import Image from "next/image"
 import { useState } from "react"
+import { FcGoogle } from "react-icons/fc"
+import { PiUserCircle } from "react-icons/pi"
 import { toast } from "sonner"
 import { Database } from "@/lib/database.types"
 import { getRedirectURL } from "@/lib/utils"
@@ -63,7 +64,7 @@ export default function Account(props: Props) {
               className="rounded-full"
             />
           ) : (
-            <UserCircle size={32} />
+            <PiUserCircle size={32} />
           )}
         </Button>
       </DialogTrigger>
@@ -77,8 +78,22 @@ export default function Account(props: Props) {
           </DialogDescription>
         </DialogHeader>
         {props.user && <p>Your birth date: {new Date(props.user.date_of_birth).toLocaleDateString()}</p>}
-        {props.authUser?.is_anonymous && <Button onClick={linkIdentity}>Sign in with Google</Button>}
-        {!props.authUser && <Button onClick={signIn}>Sign in with Google</Button>}
+        {props.authUser?.is_anonymous && (
+          <Button className="flex flex-row gap-1" onClick={linkIdentity}>
+            <span>Sign in with</span>
+            <span className="h-full">
+              <FcGoogle className="h-full" size={"100%"} />
+            </span>
+          </Button>
+        )}
+        {!props.authUser && (
+          <Button className="flex flex-row gap-1" onClick={signIn}>
+            <span>Sign in with</span>
+            <span className="h-full">
+              <FcGoogle className="h-full" size={"100%"} />
+            </span>
+          </Button>
+        )}
         {props.authUser && !props.authUser.is_anonymous && (
           <Button variant={"destructive"} onClick={signOut}>
             Sign out
