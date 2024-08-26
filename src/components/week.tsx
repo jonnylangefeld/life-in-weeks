@@ -91,7 +91,7 @@ export default function Week(props: Props) {
     }
     if (emoji) {
       return (
-        <svg viewBox="0 0 1000 1000" className="z-40 size-full">
+        <svg viewBox="0 0 1000 1000" className="z-20 size-full">
           <text
             style={{
               fontSize: 800,
@@ -119,7 +119,7 @@ export default function Week(props: Props) {
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
-        className="group relative aspect-square w-16 min-w-[2px] sm:m-px"
+        className="group relative size-full"
         onMouseEnter={() => {
           if (!props.currentTarget.current) {
             setOpen(true)
@@ -140,7 +140,7 @@ export default function Week(props: Props) {
         }}
       >
         <div
-          className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-50 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+          className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
         >
           {lived() && (
             <>

@@ -54,7 +54,7 @@ export default function Account(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={props.loading} variant={"secondary"}>
+        <Button disabled={props.loading} variant={"secondary"} className="px-2 sm:px-4">
           {props.authUser?.user_metadata["picture"] ? (
             <Image
               alt=""

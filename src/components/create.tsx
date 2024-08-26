@@ -27,7 +27,7 @@ export default function Create(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={props.loading}>
+        <Button disabled={props.loading} className="px-2 sm:px-4">
           {props.loading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {props.loading ? "Loading..." : props.user ? "Create event" : "✨ Create your own!"}
         </Button>

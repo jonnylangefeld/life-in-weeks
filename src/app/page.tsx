@@ -123,8 +123,8 @@ export default function Home() {
   }
 
   return (
-    <>
-      <div className="flex flex-row items-center justify-between gap-1">
+    <div className="flex size-full max-h-full min-w-[400px] flex-col overflow-hidden">
+      <div className="flex flex-row items-center justify-between gap-1 align-middle">
         <H1 className="whitespace-nowrap">
           {authUser?.user_metadata["name"] ? authUser?.user_metadata["name"]?.split(" ")[0] + "'s" : "My"} Life in Weeks
         </H1>
@@ -140,13 +140,15 @@ export default function Home() {
           />
         </div>
       </div>
-      <Chart
-        user={user}
-        loading={loading}
-        events={Array.from(eventMap.values())}
-        upsertEvent={upsertEvent}
-        deleteEvent={deleteEvent}
-      />
-    </>
+      <div className="flex flex-grow overflow-hidden">
+        <Chart
+          user={user}
+          loading={loading}
+          events={Array.from(eventMap.values())}
+          upsertEvent={upsertEvent}
+          deleteEvent={deleteEvent}
+        />
+      </div>
+    </div>
   )
 }
