@@ -54,6 +54,9 @@ interface Props {
 export default function UpsertEvent(props: Props) {
   const supabase = createClient()
   const now = new Date()
+  const [colorPickerOpen, setColorPickerOpen] = useState(false)
+  const [dateOpen, setDateOpen] = useState(false)
+  const [toDateOpen, setToDateOpen] = useState(false)
   const [emojiPopoverOpen, setEmojiPopoverOpen] = useState(false)
   const emojiPopoverContainerRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
@@ -163,7 +166,11 @@ export default function UpsertEvent(props: Props) {
   )
 
   return (
-    <DialogContent>
+    <DialogContent
+      onPointerDownOutside={(e) =>
+        (emojiPopoverOpen || colorPickerOpen || dateOpen || toDateOpen) && e.preventDefault()
+      }
+    >
       <DialogHeader>
         <DialogTitle>Live Event</DialogTitle>
         <DialogDescription>
@@ -229,7 +236,7 @@ export default function UpsertEvent(props: Props) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Color</FormLabel>
-                <Popover modal>
+                <Popover modal open={colorPickerOpen} onOpenChange={setColorPickerOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -259,7 +266,7 @@ export default function UpsertEvent(props: Props) {
                       <button
                         className="col-span-2 flex min-h-min flex-row flex-nowrap items-center justify-center gap-3 rounded-md p-2 text-sm hover:bg-muted"
                         onClick={() => {
-                          field.onChange(undefined)
+                          field.onChange(null)
                         }}
                       >
                         <span className={`flex size-5 items-center justify-center rounded-full`}>
@@ -282,7 +289,7 @@ export default function UpsertEvent(props: Props) {
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col">
                   <FormLabel>Date</FormLabel>
-                  <Popover modal>
+                  <Popover modal open={dateOpen} onOpenChange={setDateOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -318,7 +325,7 @@ export default function UpsertEvent(props: Props) {
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col">
                   <FormLabel>End Date</FormLabel>
-                  <Popover modal>
+                  <Popover modal open={toDateOpen} onOpenChange={setToDateOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
