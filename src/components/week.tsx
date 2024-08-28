@@ -1,4 +1,4 @@
-import { MutableRefObject, useState } from "react"
+import { MutableRefObject, useMemo, useState } from "react"
 import { PiPencilSimple } from "react-icons/pi"
 import { Event, User } from "@/lib/database.types"
 import { Data } from "./chart"
@@ -52,34 +52,41 @@ export default function Week(props: Props) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const endOfWeek = new Date(props.data.birthDate)
-  endOfWeek.setFullYear(endOfWeek.getFullYear() + props.year)
-  endOfWeek.setDate(endOfWeek.getDate() + props.week * 7)
+  const endOfWeek = useMemo(() => {
+    const date = new Date(props.data.birthDate)
+    date.setFullYear(date.getFullYear() + props.year)
+    date.setDate(date.getDate() + props.week * 7)
+    return date
+  }, [props.data.birthDate, props.year, props.week])
 
-  const beginningOfWeek = new Date(endOfWeek)
-  beginningOfWeek.setDate(beginningOfWeek.getDate() - 7)
+  const beginningOfWeek = useMemo(() => {
+    const date = new Date(endOfWeek)
+    date.setDate(date.getDate() - 7)
+    return date
+  }, [endOfWeek])
 
   const lived = (): boolean => {
     return endOfWeek.getTime() < today.getTime()
   }
 
-  const filterEvents = (): Event[] => {
-    const events: Event[] = []
-    props.data.events.forEach((event) => {
-      if (
-        dateInRange(event.date, beginningOfWeek, endOfWeek) ||
-        (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
-      ) {
-        events.push(event)
-      }
-    })
+  const events = useMemo(() => {
+    const filterEvents = (): Event[] => {
+      const events: Event[] = []
+      props.data.events.forEach((event) => {
+        if (
+          dateInRange(event.date, beginningOfWeek, endOfWeek) ||
+          (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
+        ) {
+          events.push(event)
+        }
+      })
 
-    events.sort((a, b) => a.date.getTime() - b.date.getTime())
+      events.sort((a, b) => a.date.getTime() - b.date.getTime())
 
-    return events
-  }
-
-  const events = filterEvents()
+      return events
+    }
+    return filterEvents()
+  }, [beginningOfWeek, endOfWeek, props.data.events])
   const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
 
   const tileContent = (): JSX.Element | undefined => {
