@@ -19,6 +19,7 @@ export default function Grid(props: Props) {
   const age = new Date().getFullYear() - props.data.birthDate.getFullYear()
   const rows = Math.max(79, age + 20) + 1
   const cols = 52 + 1
+  console.log("grid")
 
   useEffect(() => {
     const currentGridRef = gridRef.current

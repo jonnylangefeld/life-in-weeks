@@ -21,6 +21,7 @@ export default function Home() {
   const [authUser, setAuthUser] = useState<SupabaseUser | undefined>(undefined)
   const [user, setUser] = useState<User | undefined>(undefined)
   const [eventMap, setEventMap] = useState(new Map<string, Event>())
+  console.log("page")
 
   useEffect(() => {
     if (searchParams.get("code")) {

@@ -492,6 +492,8 @@ export default function Chart(props: Props) {
     }
   }
 
+  console.log("chart")
+
   return (
     <div
       className="grid size-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] data-[loading=true]:animate-pulse"

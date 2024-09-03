@@ -1,4 +1,4 @@
-import { MutableRefObject, useMemo, useState } from "react"
+import { Component, MutableRefObject, useMemo, useState } from "react"
 import { PiPencilSimple } from "react-icons/pi"
 import { Event, User } from "@/lib/database.types"
 import { Data } from "./chart"
@@ -46,50 +46,58 @@ const EditDialog: React.FC<Props & { event: Event }> = (props) => {
   )
 }
 
-export default function Week(props: Props) {
-  const [open, setOpen] = useState(false)
+class Week extends Component<Props> {
+  shouldComponentUpdate(nextProps: Props) {
+    console.log("should rerender")
+    // console.log("birthDate", nextProps.data.birthDate, this.props.data.birthDate)
+    // console.log("year", nextProps.year !== this.props.year)
+    // console.log("week", nextProps.week !== this.props.week)
+    return (
+      nextProps.data.birthDate !== this.props.data.birthDate ||
+      nextProps.year !== this.props.year ||
+      nextProps.week !== this.props.week ||
+      nextProps.data.events !== this.props.data.events
+    )
+  }
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  const endOfWeek = useMemo(() => {
-    const date = new Date(props.data.birthDate)
-    date.setFullYear(date.getFullYear() + props.year)
-    date.setDate(date.getDate() + props.week * 7)
+  getEndOfWeek() {
+    const { data, year, week } = this.props
+    const date = new Date(data.birthDate)
+    date.setFullYear(date.getFullYear() + year)
+    date.setDate(date.getDate() + week * 7)
     return date
-  }, [props.data.birthDate, props.year, props.week])
+  }
 
-  const beginningOfWeek = useMemo(() => {
+  getBeginningOfWeek(endOfWeek: Date) {
     const date = new Date(endOfWeek)
     date.setDate(date.getDate() - 7)
     return date
-  }, [endOfWeek])
+  }
 
-  const lived = (): boolean => {
+  lived(endOfWeek: Date): boolean {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     return endOfWeek.getTime() < today.getTime()
   }
 
-  const events = useMemo(() => {
-    const filterEvents = (): Event[] => {
-      const events: Event[] = []
-      props.data.events.forEach((event) => {
-        if (
-          dateInRange(event.date, beginningOfWeek, endOfWeek) ||
-          (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
-        ) {
-          events.push(event)
-        }
-      })
+  filterEvents(beginningOfWeek: Date, endOfWeek: Date): Event[] {
+    const { data } = this.props
+    const events: Event[] = []
+    data.events.forEach((event) => {
+      if (
+        dateInRange(event.date, beginningOfWeek, endOfWeek) ||
+        (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
+      ) {
+        events.push(event)
+      }
+    })
 
-      events.sort((a, b) => a.date.getTime() - b.date.getTime())
+    events.sort((a, b) => a.date.getTime() - b.date.getTime())
 
-      return events
-    }
-    return filterEvents()
-  }, [beginningOfWeek, endOfWeek, props.data.events])
-  const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
+    return events
+  }
 
-  const tileContent = (): JSX.Element | undefined => {
+  tileContent(events: Event[], beginningOfWeek: Date, endOfWeek: Date): JSX.Element | undefined {
     let emoji: string | undefined
     for (const event of events) {
       if (event.emoji && dateInRange(event.date, beginningOfWeek, endOfWeek)) {
@@ -116,86 +124,204 @@ export default function Week(props: Props) {
     return undefined
   }
 
-  const onOpenChange = (open: boolean) => {
-    setOpen(open)
-    if (!open) {
-      props.currentTarget.current = null
-    }
-  }
+  render() {
+    const { year, week, upsertEvent, deleteEvent, currentTarget, user } = this.props
+    console.log("week", year, week)
+    const endOfWeek = this.getEndOfWeek()
+    const beginningOfWeek = this.getBeginningOfWeek(endOfWeek)
+    const events = this.filterEvents(beginningOfWeek, endOfWeek)
+    const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
 
-  return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger
-        className="group relative size-full focus-visible:outline-none"
-        onMouseEnter={() => {
-          if (!props.currentTarget.current) {
-            setOpen(true)
-          }
-        }}
-        onMouseLeave={() => {
-          if (!props.currentTarget.current) {
-            setOpen(false)
-          }
-        }}
-        onDoubleClick={() => console.log("double click")}
-        onTouchStart={() => console.log("touch start")}
-        onTouchEnd={() => console.log("touch end")}
-        onClick={(e) => {
-          e.preventDefault()
-          setOpen(true)
-          props.currentTarget.current = e.currentTarget
-        }}
-      >
+    return (
+      <div className="group relative size-full focus-visible:outline-none">
         <div
-          className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+          className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${this.lived(endOfWeek) ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
         >
-          {lived() && (
+          {this.lived(endOfWeek) && (
             <>
               <div className="absolute bottom-0 grid size-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
                 {colors.map((color, index) => (
                   <div key={index} className={`bg-${color}-300 dark:bg-${color}-200`}></div>
                 ))}
               </div>
-              {tileContent()}
+              {this.tileContent(events, beginningOfWeek, endOfWeek)}
             </>
           )}
         </div>
-      </PopoverTrigger>
-      <PopoverContent
-        side="top"
-        className="text-sm shadow-lg"
-        onWheel={(e) => {
-          e.stopPropagation()
-        }}
-      >
-        <div className={events.length != 0 ? "text-muted-foreground" : ""}>
-          <div>
-            Age {props.year} year{props.year != 1 ? "s" : ""} and {props.week} week{props.week > 1 ? "s" : ""}
-          </div>
-          <div>
-            {beginningOfWeek.toLocaleDateString(undefined, { timeZone: "UTC" })} -{" "}
-            {endOfWeek.toLocaleDateString(undefined, { timeZone: "UTC" })}
-          </div>
-        </div>
-        {events.map((event, index) => {
-          return (
-            <div key={index} className="flex flex-row">
-              <div className="flex flex-grow flex-col">
-                <p className="mt-2 text-lg">
-                  {event.emoji} {event.title}
-                </p>
-                <p className="text-muted-foreground">
-                  {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
-                  {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
-                </p>
-              </div>
-              {props.user && <EditDialog {...props} event={event} />}
-            </div>
-          )
-        })}
-
-        <PopoverArrow className="invert dark:invert-0" />
-      </PopoverContent>
-    </Popover>
-  )
+      </div>
+    )
+  }
 }
+
+export default Week
+
+// export default function Week(props: Props) {
+//   const [open, setOpen] = useState(false)
+
+//   const today = new Date()
+//   today.setHours(0, 0, 0, 0)
+
+//   const endOfWeek = useMemo(() => {
+//     const date = new Date(props.data.birthDate)
+//     date.setFullYear(date.getFullYear() + props.year)
+//     date.setDate(date.getDate() + props.week * 7)
+//     return date
+//   }, [props.data.birthDate, props.year, props.week])
+
+//   const beginningOfWeek = useMemo(() => {
+//     const date = new Date(endOfWeek)
+//     date.setDate(date.getDate() - 7)
+//     return date
+//   }, [endOfWeek])
+
+//   console.log("week", props.year, props.week)
+//   const lived = (): boolean => {
+//     return endOfWeek.getTime() < today.getTime()
+//   }
+
+//   const events = useMemo(() => {
+//     const filterEvents = (): Event[] => {
+//       const events: Event[] = []
+//       props.data.events.forEach((event) => {
+//         if (
+//           dateInRange(event.date, beginningOfWeek, endOfWeek) ||
+//           (event.to_date && dateRangeOverlap(event.date, event.to_date, beginningOfWeek, endOfWeek))
+//         ) {
+//           events.push(event)
+//         }
+//       })
+
+//       events.sort((a, b) => a.date.getTime() - b.date.getTime())
+
+//       return events
+//     }
+//     return filterEvents()
+//   }, [beginningOfWeek, endOfWeek, props.data.events])
+//   const colors = events.filter((event) => event.color !== undefined).map((event) => event.color!)
+
+//   const tileContent = (): JSX.Element | undefined => {
+//     let emoji: string | undefined
+//     for (const event of events) {
+//       if (event.emoji && dateInRange(event.date, beginningOfWeek, endOfWeek)) {
+//         emoji = event.emoji
+//       }
+//     }
+//     if (emoji) {
+//       return (
+//         <svg viewBox="0 0 1000 1000" className="z-20 size-full">
+//           <text
+//             style={{
+//               fontSize: 800,
+//               textAnchor: "middle",
+//               dominantBaseline: "central",
+//             }}
+//             x="50%"
+//             y="50%"
+//           >
+//             {emoji}
+//           </text>
+//         </svg>
+//       )
+//     }
+//     return undefined
+//   }
+
+//   const onOpenChange = (open: boolean) => {
+//     setOpen(open)
+//     if (!open) {
+//       props.currentTarget.current = null
+//     }
+//   }
+
+//   return (
+//     <div className="group relative size-full focus-visible:outline-none">
+//       <div
+//         className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+//       >
+//         {lived() && (
+//           <>
+//             <div className="absolute bottom-0 grid size-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
+//               {colors.map((color, index) => (
+//                 <div key={index} className={`bg-${color}-300 dark:bg-${color}-200`}></div>
+//               ))}
+//             </div>
+//             {tileContent()}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//     // <Popover open={open} onOpenChange={onOpenChange}>
+//     //   <PopoverTrigger
+//     //     className="group relative size-full focus-visible:outline-none"
+//     //     onMouseEnter={() => {
+//     //       if (!props.currentTarget.current) {
+//     //         setOpen(true)
+//     //       }
+//     //     }}
+//     //     onMouseLeave={() => {
+//     //       if (!props.currentTarget.current) {
+//     //         setOpen(false)
+//     //       }
+//     //     }}
+//     //     onDoubleClick={() => console.log("double click")}
+//     //     onTouchStart={() => console.log("touch start")}
+//     //     onTouchEnd={() => console.log("touch end")}
+//     //     onClick={(e) => {
+//     //       e.preventDefault()
+//     //       setOpen(true)
+//     //       props.currentTarget.current = e.currentTarget
+//     //     }}
+//     //   >
+//     //     <div
+//     //       className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+//     //     >
+//     //       {lived() && (
+//     //         <>
+//     //           <div className="absolute bottom-0 grid size-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
+//     //             {colors.map((color, index) => (
+//     //               <div key={index} className={`bg-${color}-300 dark:bg-${color}-200`}></div>
+//     //             ))}
+//     //           </div>
+//     //           {tileContent()}
+//     //         </>
+//     //       )}
+//     //     </div>
+//     //   </PopoverTrigger>
+//     //   <PopoverContent
+//     //     side="top"
+//     //     className="text-sm shadow-lg"
+//     //     onWheel={(e) => {
+//     //       e.stopPropagation()
+//     //     }}
+//     //   >
+//     //     <div className={events.length != 0 ? "text-muted-foreground" : ""}>
+//     //       <div>
+//     //         Age {props.year} year{props.year != 1 ? "s" : ""} and {props.week} week{props.week > 1 ? "s" : ""}
+//     //       </div>
+//     //       <div>
+//     //         {beginningOfWeek.toLocaleDateString(undefined, { timeZone: "UTC" })} -{" "}
+//     //         {endOfWeek.toLocaleDateString(undefined, { timeZone: "UTC" })}
+//     //       </div>
+//     //     </div>
+//     //     {events.map((event, index) => {
+//     //       return (
+//     //         <div key={index} className="flex flex-row">
+//     //           <div className="flex flex-grow flex-col">
+//     //             <p className="mt-2 text-lg">
+//     //               {event.emoji} {event.title}
+//     //             </p>
+//     //             <p className="text-muted-foreground">
+//     //               {event.date.toLocaleDateString(undefined, { timeZone: "UTC" })}
+//     //               {event.to_date ? " - " + event.to_date.toLocaleDateString(undefined, { timeZone: "UTC" }) : ""}
+//     //             </p>
+//     //           </div>
+//     //           {props.user && <EditDialog {...props} event={event} />}
+//     //         </div>
+//     //       )
+//     //     })}
+
+//     //     <PopoverArrow className="invert dark:invert-0" />
+//     //   </PopoverContent>
+//     // </Popover>
+//   )
+// }
