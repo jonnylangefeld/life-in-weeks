@@ -65,16 +65,19 @@ export default function Grid(props: Props) {
           if (x == 0 && y != 0) {
             return <Tick key={`${x}=${y}`} t={y - 1} vertical />
           }
+          const year = y - 1
+          const week = x
           return (
             <Week
               key={`${x}=${y}`}
-              year={y - 1}
-              week={x}
-              data={props.data}
-              currentTarget={currentTarget}
-              user={props.user}
-              upsertEvent={props.upsertEvent}
-              deleteEvent={props.deleteEvent}
+              lived={year < age || (year == age && week <= new Date().getWeek())}
+              // year={y - 1}
+              // week={x}
+              // data={props.data}
+              // currentTarget={currentTarget}
+              // user={props.user}
+              // upsertEvent={props.upsertEvent}
+              // deleteEvent={props.deleteEvent}
             />
           )
         })
