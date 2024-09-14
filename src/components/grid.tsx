@@ -19,6 +19,7 @@ export default function Grid(props: Props) {
   const age = new Date().getFullYear() - props.data.birthDate.getFullYear()
   const rows = Math.max(79, age + 20) + 1
   const cols = 52 + 1
+  let eventIndex = 0
 
   useEffect(() => {
     const currentGridRef = gridRef.current
@@ -43,6 +44,7 @@ export default function Grid(props: Props) {
     }
   }, [cols])
 
+  console.log("grid render")
   return (
     <div
       ref={gridRef}
@@ -67,10 +69,29 @@ export default function Grid(props: Props) {
           }
           const year = y - 1
           const week = x
+
+          const endOfWeek = new Date(props.data.birthDate)
+          endOfWeek.setFullYear(endOfWeek.getFullYear() + year)
+          endOfWeek.setDate(endOfWeek.getDate() + week * 7)
+
+          // console.log("endOfWeek", endOfWeek)
+
+          const events: Event[] = []
+          for (
+            ;
+            eventIndex < props.data.events.length && props.data.events[eventIndex].date <= endOfWeek;
+            eventIndex++
+          ) {
+            events.push(props.data.events[eventIndex])
+          }
           return (
             <Week
               key={`${x}=${y}`}
-              lived={year < age || (year == age && week <= new Date().getWeek())}
+              year={year}
+              week={week}
+              birthDate={props.data.birthDate}
+              events={events}
+              endOfWeek={endOfWeek}
               // year={y - 1}
               // week={x}
               // data={props.data}

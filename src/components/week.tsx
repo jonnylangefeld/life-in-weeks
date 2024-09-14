@@ -14,7 +14,10 @@ interface Props {
   // user?: User
   // upsertEvent: (event: Event) => void
   // deleteEvent?: (event: Event) => void
-  lived: boolean
+  year: number
+  week: number
+  birthDate: Date
+  endOfWeek: Date
   events: Event[]
 }
 
@@ -51,15 +54,15 @@ function dateRangeOverlap(from1: Date, to1: Date, from2: Date, to2: Date): boole
 export default function Week(props: Props) {
   const [open, setOpen] = useState(false)
 
-  // const today = new Date()
-  // today.setHours(0, 0, 0, 0)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
   // const endOfWeek = useMemo(() => {
-  //   const date = new Date(props.data.birthDate)
+  //   const date = new Date(props.birthDate)
   //   date.setFullYear(date.getFullYear() + props.year)
   //   date.setDate(date.getDate() + props.week * 7)
   //   return date
-  // }, [props.data.birthDate, props.year, props.week])
+  // }, [props.birthDate, props.year, props.week])
 
   // const beginningOfWeek = useMemo(() => {
   //   const date = new Date(endOfWeek)
@@ -67,9 +70,9 @@ export default function Week(props: Props) {
   //   return date
   // }, [endOfWeek])
 
-  // const lived = (): boolean => {
-  //   return endOfWeek.getTime() < today.getTime()
-  // }
+  const lived = (): boolean => {
+    return props.endOfWeek.getTime() < today.getTime()
+  }
 
   // const events = useMemo(() => {
   //   const filterEvents = (): Event[] => {
@@ -133,9 +136,9 @@ export default function Week(props: Props) {
   return (
     <div className="group relative size-full focus-visible:outline-none">
       <div
-        className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${props.lived ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
+        className={`absolute bottom-0 flex size-full items-center justify-center sm:rounded-[1px] ${lived() ? `pointer-events-none transition-all duration-1000 ease-in-out group-hover:z-30 group-hover:scale-[200%] group-hover:shadow-[0_0_10px] group-hover:shadow-background group-hover:duration-100` : "bg-accent"}`}
       >
-        {props.lived && (
+        {lived() && (
           <>
             <div className="absolute bottom-0 grid size-full grid-cols-1 overflow-clip bg-accent-foreground sm:rounded-[1px]">
               {colors.map((color, index) => (
