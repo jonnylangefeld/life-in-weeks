@@ -65,14 +65,14 @@ Credentials: https://console.cloud.google.com/apis/credentials?project=life-in-w
   - http://127.0.0.1:54321/auth/v1/callback
   - http://localhost:54321/auth/v1/callback
   - https://wzmbtcpnjweqsqiubvii.supabase.co/auth/v1/callback
-  - https://mbauxwpjmmlvbojestpa.supabase.co/auth/v1/callback
+  - https://pfxesodccyoallutckle.supabase.co/auth/v1/callback
 
-configure supabase providers with client id and secret from above: https://supabase.com/dashboard/project/mbauxwpjmmlvbojestpa/auth/providers  
-configure redirect urls: https://supabase.com/dashboard/project/mbauxwpjmmlvbojestpa/auth/url-configuration
+configure supabase providers with client id and secret from above: https://supabase.com/dashboard/project/pfxesodccyoallutckle/auth/providers  
+configure redirect urls: https://supabase.com/dashboard/project/pfxesodccyoallutckle/auth/url-configuration
 
 for staging:
 
-- `https://\*-jonny-langefelds-projects.vercel.app/\*\*`
+- `https://*-jonny-langefelds-projects.vercel.app/**`
 
 for prod:
 
