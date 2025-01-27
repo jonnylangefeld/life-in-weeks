@@ -107,7 +107,7 @@ export default function UpsertEvent(props: Props) {
       toast.success(`${props.event ? "Updated" : "Created"} "${[event.emoji, event.title].join(" ")}"`)
 
       const e = parseDBEvent(data)
-      form.reset(e)
+      form.reset()
       props.upsertEvent(e)
       props.setOpen(false)
     } finally {
