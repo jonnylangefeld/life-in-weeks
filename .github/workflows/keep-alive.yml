@@ -1,4 +1,4 @@
-# a cron job that runs every 24 hours to keep the workflow alive
+# a cron job that runs every 24 hours to keep the database alive
 name: Keep Supabase Project Alive
 
 on:
@@ -9,4 +9,12 @@ jobs:
   keep-alive:
     runs-on: ubuntu-22.04
     steps:
+      # For production we just call the `keep-alive` endpoint since it's public for hobby vercel plans.
       - run: curl -s https://life-in-weeks-xi.vercel.app/keep-alive
+      # The staging we call the supabase API endpoint directly for the same database function.
+      # This is because non-production deployment aren't public in the hobby vercel plan.
+      # Technically we could to production and staging with this same method, but we leave both ways in to show the alternatives.
+      - run: |
+          curl -s -X POST 'https://${{ secrets.STAGING_PROJECT_ID }}.supabase.co/rest/v1/rpc/keep_alive' \
+          -H "Content-Type: application/json" \
+          -H "apikey: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}"
